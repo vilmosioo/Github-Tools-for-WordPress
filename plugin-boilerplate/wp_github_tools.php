@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: VI Github Changelog
+Plugin Name: Github Tools for WordPress
 Plugin URI: http://vilmosioo.co.uk
-Description: A plugin that allows easy insert of a dinamic changelog from a github repository. Supports widgets and shortcodes.
+Description: A plugin that allows easy insert of a dinamic changelog from a github repository. Custom widgets and shortcodes.
 Version: 1.0
 Author: Vilmos Ioo
 Author URI: http://vilmosioo.co.uk
@@ -26,16 +26,6 @@ License: GPL2
   
 */
 
-/*
-require_once 'includes/Hyperion.php';
-require_once 'includes/Utils.php';
-require_once 'includes/Theme_Options.php';
-require_once 'includes/Metabox.php';
-require_once 'includes/Custom_Post.php';
-require_once 'includes/Gist_Manager.php';
-require_once 'includes/Github_API.php';
-*/
-
 // Define constants
 define('VI_GITHUB_COMMITS_DIR', plugin_dir_path(__FILE__));
 define('VI_GITHUB_COMMITS_URL', plugin_dir_url(__FILE__));
@@ -44,9 +34,12 @@ if(is_admin()){
     require_once(VI_GITHUB_COMMITS_DIR.'includes/admin.php');
 }    
 require_once(VI_GITHUB_COMMITS_DIR.'includes/core.php');
-require_once(VI_GITHUB_COMMITS_DIR.'includes/Github_Commits_Widget.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Event_Manager.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 
-class VI_Github_Commits {
+class WP_Github_Tools {
 	 
 	/**
 	 * Initializes the plugin by setting localization, filters, and administration functions.
@@ -66,32 +59,66 @@ class VI_Github_Commits {
 		
 		// TODO
 		// add github username
-		add_filter('user_contactmethods',array(&$this, 'register_github_field'),10,1);
 		add_action( 'admin_notices', array(&$this, 'check_github_field') );
-
-		// create gist  shortcode
+		// create gist  shortcode [gist id='#']
+		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
+		add_shortcode('commits', array( &$this, 'print_commits' ));
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
+		// schedule automatic updating
+		new WP_Github_Tools_Event_Manager();
+		// add settings page
+		new WP_Github_Tools_Options();
 
 	} 
 
-	function register_widgets(){
-		register_widget( 'Github_Commits_Widget' ); 
+	// create custom shortcodes
+	function print_gist( $atts, $content = null ) {
+		extract(shortcode_atts(array('id' => ''), $atts));
+		return $id ? "<script src=\"http://gist.github.com/$id.js\"></script>" : "";
+	}
+	// create custom shortcodes
+	function print_commits( $atts, $content = null ) {
+		$github = get_option('WP_Github_Tools_Settings');
+        $github = $github['github'];
+		if(!isset($github) || empty($github)) return;
+		
+		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => 'Latest updates'), $atts));
+		if(!isset($repository) || empty($repository)) return;
+
+		$s = "<h2>$title</h2><ul class='github-commits github-commits-$repository'>";
+		$repositories = get_option('WP_Github_Tools');
+        if(!isset($repositories) || !is_array($repositories)) return;
+        $repositories = $repositories['repositories'];
+		if(!is_array($repositories)) return;
+		$commits = $repositories[$instance[$name]]['commits'];
+		if(!is_array($commits)) return;
+		$commits = array_slice($commits, 0, $count);
+		$commits = array_slice($commits, 0, $count);
+		foreach($commits as $commit){
+			$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
+			$commit = $commit['commit'];
+			$date = date("d M Y", strtotime($commit['committer']['date']));
+			$msg = $commit['message'];
+			$s .= "<li class='commit'><span class='date'>$date</span> <a href='$url' title='$msg'>$msg</a></li>";
+		}	
+		$s .= '</ul>';
+
+		return $s;
 	}
 
-	function register_github_field($contactmethods){
-		$contactmethods['github'] = 'Github';
-		return $contactmethods;
+	function register_widgets(){
+		register_widget( 'WP_Github_Tools_Commits_Widget' ); 
 	}
 	
 	// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
-		global $current_user;
-		$github = get_user_meta($current_user->ID, 'github', true);  
+        $github = get_option('WP_Github_Tools_Settings');
+        $github = $github['github'];
 		if(!isset($github) || empty($github)){
-			echo '<div class="update-nag">You have activated "VI Github Commits" plugin but have not set a github username! <a href="'.admin_url('profile.php#github').'">Do it now</a>.</div>';
-		}
+			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('profile.php#github').'">Do it now</a>.</div>';
+		} 
 	}
 
 	/**
@@ -117,7 +144,8 @@ class VI_Github_Commits {
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
 	function uninstall( $network_wide ) {
-		// TODO:	Define uninstall functionality here		
+		// TODO:	Define uninstall functionality here	
+		// remove github option (?)	
 	} 
 
 	/**
@@ -150,4 +178,4 @@ class VI_Github_Commits {
 	
 } // end class
 
-$plugin_name = new VI_Github_Commits();
+$plugin_name = new WP_Github_Tools();

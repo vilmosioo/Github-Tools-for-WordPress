@@ -1,0 +1,116 @@
+<?php
+/*
+* Theme options
+* 
+* Loads default settings for the Hyperion theme 
+*/
+class WP_Github_Tools_Options{
+	private $options = array();
+	private $slug = 'WP_Github_Tools_Settings';
+	private $title = 'Github Tools';
+
+	function __construct(){
+		if(!is_admin()) return;
+		add_action('admin_menu', array(&$this, 'init'));
+		add_action( 'admin_init', array(&$this, 'register_mysettings') );
+		$this->addField(
+			array(
+				'slug' => 'github', 
+				'name' => 'Github username',
+				'description' => 'Your github\'s account username (required)',
+			)
+		);
+		$this->addField(
+			array(
+				'slug' => 'refresh', 
+				'name' => 'Refresh rate',
+				'description' => 'How often to refresh.',
+			)
+		);
+
+		// initialise options
+//		update_option($this->slug, $this->options);
+
+		if(!get_option($this->slug)){
+			update_option($this->slug, $this->options);
+		}
+	}
+
+	// Parameters : slug, name, description, tab
+	function addField($args = array()){
+		$args = array_merge ( array(
+	      "slug" => 'option',
+	      "name" => 'Option name',
+	      "description" => ""
+	    ), $args );
+
+        $this->options[$args['slug']] = $args;
+	}
+
+	/*
+	* Init function
+	* 
+	* Initializes the theme's options. Called on admin menu action.
+	*/
+	function init(){
+		// add_theme_page( $page_title, $menu_title, $capability, $menu_slug, $function);
+		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
+		add_management_page($this->title, $this->title, 'administrator', $this->slug, array(&$this, 'settings_page_setup'));
+		
+
+	}
+
+	/*
+	* Settings page set up
+	*
+	* Handles the display of the Theme Options page (under Appearance)
+	*/
+	function settings_page_setup() {
+		echo '<div class="wrap">';
+		if ( isset( $_GET['settings-updated'] ) ) {
+			echo "<div class='updated'><p>Github Tools Options updated successfully.</p></div>";
+		} 
+		?>
+		<form method="post" action="options.php">
+			<?php settings_fields( $this->slug ); ?>
+			<?php do_settings_sections( $this->slug ); ?>
+	    	<p class="submit">
+				<input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
+			</p>
+		</form>
+		</div>
+		<?php 
+	} 
+
+	/*
+	* Register settings
+	* 
+	* Register all settings and setting sections
+	*/
+	function register_mysettings() {
+		// register_setting( $option_group, $option_name, $sanitize_callback ); 
+		register_setting( $this->slug, $this->slug );
+		// add_settings_section( $id, $title, $callback, $page ); 
+		add_settings_section( $this->slug, '', array(&$this, 'section_handler'), 'WP_Github_Tools_Settings' ); 
+		foreach($this->options as $option){
+			extract($option);
+			// add_settings_field( $id, $title, $callback, $page, $section, $args ); 
+			add_settings_field( $slug, $name, array(&$this, 'input_handler'), $this->slug, $this->slug, $option );
+		}
+	}
+
+	function section_handler($args){
+		echo "<h2>$this->title</h2>";
+	}
+
+	function input_handler($args){
+		extract($args);
+		$value = get_option($this->slug);
+		$value = $value[$slug];
+		$slug = $this->slug."[$slug]";
+		echo "<input type='text' id='$slug' name='$slug' value='$value'>"; 
+		if ( isset($description) && !empty($description) )
+		echo '<br /><span class="description">' . $description . '</span>';
+	}
+}
+?>
