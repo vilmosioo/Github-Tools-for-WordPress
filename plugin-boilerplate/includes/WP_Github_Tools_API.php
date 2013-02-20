@@ -26,6 +26,10 @@ class WP_Github_Tools_API{
     	return self::get_data("users/$user/repos");
     }
 
+    static function get_user($user){
+        return self::get_data("users/$user");
+    }
+
     // Get the name of the repo that we'll use in the request url
     static function get_commits($repo, $user){
         return self::get_data("repos/$user/$repo/commits");

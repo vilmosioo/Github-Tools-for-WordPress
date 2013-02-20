@@ -49,6 +49,24 @@ class WP_Github_Tools_Options{
 			}
 			update_option($this->slug, $temp);
 		}
+
+		// add ajax functionality
+		add_action('wp_ajax_verify_github_username', array(&$this, 'verify_github_username'));	
+	}
+
+	function verify_github_username() {
+		global $wpdb; // this is how you get access to the database
+
+		if(!WP_Github_Tools_API::can_update()){
+			$msg['message'] = "API limit reached";
+			echo json_encode($msg);
+			die();
+		}
+		
+		$github = $_POST['github'];
+		echo json_encode(WP_Github_Tools_API::get_user($github));
+
+		die(); // this is required to return a proper result
 	}
 
 	// Parameters : slug, name, description, tab

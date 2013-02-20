@@ -30,10 +30,6 @@ License: GPL2
 define('VI_GITHUB_COMMITS_DIR', plugin_dir_path(__FILE__));
 define('VI_GITHUB_COMMITS_URL', plugin_dir_url(__FILE__));
 
-if(is_admin()){
-    require_once(VI_GITHUB_COMMITS_DIR.'includes/admin.php');
-}    
-require_once(VI_GITHUB_COMMITS_DIR.'includes/core.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Event_Manager.php');
@@ -41,23 +37,21 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 
 class WP_Github_Tools {
 	 
+	static function init(){
+		new WP_Github_Tools();
+	}
+
 	/**
 	 * Initializes the plugin by setting localization, filters, and administration functions.
 	 */
-	function __construct() {
-		// Register admin styles and scripts
-		add_action( 'admin_print_styles', array( $this, 'register_admin_styles' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_admin_scripts' ) );
-	
-		// Register site styles and scripts
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_scripts' ) );
-	
-		// Register hooks that are fired when the plugin is activated, deactivated, and uninstalled, respectively.
-		register_activation_hook( __FILE__, array( $this, 'activate' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
-		
-		// TODO
+	private function __construct() {
+		register_activation_hook( __FILE__, array( &$this, 'activate' ) );
+		register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
+		register_uninstall_hook( __FILE__, array( &$this, 'uninstall' ) );
+
+		// Add a settings link in the plugin page
+		add_filter('plugin_action_links', array(&$this, 'action_links'), 10, 2);
+
 		// add github username
 		add_action( 'admin_notices', array(&$this, 'check_github_field') );
 		// create gist  shortcode [gist id='#']
@@ -67,11 +61,29 @@ class WP_Github_Tools {
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
 		// schedule automatic updating
-		new WP_Github_Tools_Event_Manager();
+		WP_Github_Tools_Event_Manager::init();
 		// add settings page
-		new WP_Github_Tools_Options();
+		WP_Github_Tools_Options::init();
 
 	} 
+	
+	function action_links($links, $file) {
+	    static $this_plugin;
+
+	    if (!$this_plugin) {
+	        $this_plugin = plugin_basename(__FILE__);
+	    }
+
+	    if ($file == $this_plugin) {
+	        // The "page" query string value must be equal to the slug
+	        // of the Settings admin page we defined earlier, which in
+	        // this case equals "myplugin-settings".
+	        $settings_link = '<a href="' .admin_url('tools.php?page=WP_Github_Tools_Settings').'">Settings</a>';
+	        array_unshift($links, $settings_link);
+	    }
+
+	    return $links;
+	}
 
 	// create custom shortcodes
 	function print_gist( $atts, $content = null ) {
@@ -92,7 +104,7 @@ class WP_Github_Tools {
         if(!isset($repositories) || !is_array($repositories)) return;
         $repositories = $repositories['repositories'];
 		if(!is_array($repositories)) return;
-		$commits = $repositories[$instance[$name]]['commits'];
+		$commits = $repositories[$repository]['commits'];
 		if(!is_array($commits)) return;
 		$commits = array_slice($commits, 0, $count);
 		$commits = array_slice($commits, 0, $count);
@@ -116,8 +128,8 @@ class WP_Github_Tools {
 	function check_github_field(){
         $github = get_option('WP_Github_Tools_Settings');
         $github = $github['github'];
-		if(!isset($github) || empty($github)){
-			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('profile.php#github').'">Do it now</a>.</div>';
+        if(!isset($github) || empty($github)){
+			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('tools.php?page=WP_Github_Tools_Settings#github').'">Do it now</a>.</div>';
 		} 
 	}
 
@@ -126,7 +138,7 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	function activate( $network_wide ) {
+	static function activate( $network_wide ) {
 	} 
 	
 	/**
@@ -134,8 +146,7 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	function deactivate( $network_wide ) {
-		// TODO:	Define deactivation functionality here		
+	static function deactivate( $network_wide ) {
 	} 
 	
 	/**
@@ -143,9 +154,11 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	function uninstall( $network_wide ) {
-		// TODO:	Define uninstall functionality here	
-		// remove github option (?)	
+	static function uninstall( $network_wide ) {
+		delete_option('WP_Github_Tools_Settings');
+		delete_option('WP_Github_Tools');
+
+		WP_Github_Tools_Event_Manager::delete_event();
 	} 
 
 	/**
@@ -160,22 +173,9 @@ class WP_Github_Tools {
 	 */	
 	function register_admin_scripts() {
 		wp_enqueue_script( 'vi-github-commits-admin-script', VI_GITHUB_COMMITS_DIR.'js/admin.js');
-	} 
-	
-	/**
-	 * Registers and enqueues plugin-specific styles.
-	 */
-	function register_plugin_styles() {
-		wp_enqueue_style( 'vi-github-commits-plugin-styles', VI_GITHUB_COMMITS_DIR.'css/display.css');
-	} 
-	
-	/**
-	 * Registers and enqueues plugin-specific scripts.
-	 */
-	function register_plugin_scripts() {
-		wp_enqueue_script( 'vi-github-commits-plugin-script', VI_GITHUB_COMMITS_DIR.'js/display.js');
-	} 
+	}
 	
 } // end class
 
-$plugin_name = new WP_Github_Tools();
+$plugin_name = WP_Github_Tools::init();
+?>
