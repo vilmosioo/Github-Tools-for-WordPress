@@ -1,24 +1,38 @@
 <?php
 /*
-* Gist Manager
+* Event Manager
 * 
-* Calls the GIthub API to retreive latest GIST and include them in the WP blog
 */
 class WP_Github_Tools_Event_Manager{
-	private $slug = 'WP_Github_Tools';
-	function __construct(){
+    private $slug = 'WP_Github_Tools';
+    private $hook = 'event-manager';
+
+	private function __construct(){
 	   
-        add_action( 'event-manager', array(&$this, 'refresh') );  
- 		
-        if( false !== ( $time = wp_next_scheduled( 'event-manager' ) ) ) {  
-            wp_unschedule_event($time, 'event-manager' ); 
-        }
-        
-		if( !wp_next_scheduled( 'event-manager' ) ) {  
-	       wp_schedule_event( time(), 'daily', 'event-manager' ); 
-	       //die('scheduled');
+        add_action( $this->hook, array(&$this, 'refresh') );  
+        $set_schedule = get_option('WP_Github_Tools_Settings');
+        $set_schedule = $set_schedule['refresh'];
+            
+        if( !wp_next_scheduled( $this->hook ) ) { 
+            if(!$set_schedule) $set_schedule = 'daily'; 
+	        wp_schedule_event( time(), $set_schedule, $this->hook ); 
+        } else {
+            // check if event schedule has changed
+            $current_schedule = wp_get_schedule($this->hook);
+            if($set_schedule && $current_schedule != $set_schedule){
+                // reset event
+                $next_occurence = wp_next_scheduled($this->hook);
+                self::delete_event();
+                wp_schedule_event( $next_occurence, $set_schedule, $this->hook ); 
+            }
         }
 	}
+
+    static function delete_event($hook = 'event-manager'){
+        if( false !== ( $time = wp_next_scheduled( $hook ) ) ) {  
+            wp_unschedule_event($time, $hook ); 
+        }
+    }
 
 	function refresh(){
         $options = array(
@@ -46,5 +60,9 @@ class WP_Github_Tools_Event_Manager{
             update_option( $this->slug, $options);
         } 
   	}
+
+    static function init(){
+        new WP_Github_Tools_Event_Manager();
+    } 
 }
 ?>

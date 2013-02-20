@@ -5,13 +5,18 @@
 * Loads default settings for the Hyperion theme 
 */
 class WP_Github_Tools_Options{
+	
+    static function init(){
+        new WP_Github_Tools_Options();
+    } 
+
 	private $options = array();
 	private $slug = 'WP_Github_Tools_Settings';
 	private $title = 'Github Tools';
 
-	function __construct(){
+	private function __construct(){
 		if(!is_admin()) return;
-		add_action('admin_menu', array(&$this, 'init'));
+		add_action('admin_menu', array(&$this, 'start'));
 		add_action( 'admin_init', array(&$this, 'register_mysettings') );
 		$this->addField(
 			array(
@@ -20,19 +25,29 @@ class WP_Github_Tools_Options{
 				'description' => 'Your github\'s account username (required)',
 			)
 		);
+
+		$temp = array();
+		foreach (wp_get_schedules() as $key => $value) {
+			$temp[$key] = $value['display'];
+		}
+
 		$this->addField(
 			array(
 				'slug' => 'refresh', 
 				'name' => 'Refresh rate',
-				'description' => 'How often to refresh.',
+				'description' => 'How often to refresh to repositories.',
+				'type' => 'select',
+				'options' => $temp
 			)
 		);
 
 		// initialise options
-//		update_option($this->slug, $this->options);
-
 		if(!get_option($this->slug)){
-			update_option($this->slug, $this->options);
+			$temp = array();
+			foreach ($this->options as $option) {
+				$temp[$option['slug']] = '';
+			}
+			update_option($this->slug, $temp);
 		}
 	}
 
@@ -41,7 +56,8 @@ class WP_Github_Tools_Options{
 		$args = array_merge ( array(
 	      "slug" => 'option',
 	      "name" => 'Option name',
-	      "description" => ""
+	      "description" => "",
+	      'type' => 'text'
 	    ), $args );
 
         $this->options[$args['slug']] = $args;
@@ -52,12 +68,17 @@ class WP_Github_Tools_Options{
 	* 
 	* Initializes the theme's options. Called on admin menu action.
 	*/
-	function init(){
+	function start(){
 		// add_theme_page( $page_title, $menu_title, $capability, $menu_slug, $function);
 		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
-		add_management_page($this->title, $this->title, 'administrator', $this->slug, array(&$this, 'settings_page_setup'));
-		
+		$page = add_management_page($this->title, $this->title, 'administrator', $this->slug, array(&$this, 'settings_page_setup'));
+		add_action( "admin_print_scripts-$page", array(&$this, 'settings_styles_and_scripts'));
+	}
 
+	// loads style/script on the settings page
+	function settings_styles_and_scripts(){
+		wp_enqueue_script('github-tools-settings-page-script', VI_GITHUB_COMMITS_URL. 'js/admin.js');
+		wp_enqueue_style('github-tools-settings-page-style', VI_GITHUB_COMMITS_URL. 'css/admin.css');
 	}
 
 	/*
@@ -100,7 +121,7 @@ class WP_Github_Tools_Options{
 	}
 
 	function section_handler($args){
-		echo "<h2>$this->title</h2>";
+		echo "<div id=\"icon-options-general\" class=\"icon32\"><br></div><h2>$this->title</h2>";
 	}
 
 	function input_handler($args){
@@ -108,9 +129,22 @@ class WP_Github_Tools_Options{
 		$value = get_option($this->slug);
 		$value = $value[$slug];
 		$slug = $this->slug."[$slug]";
-		echo "<input type='text' id='$slug' name='$slug' value='$value'>"; 
-		if ( isset($description) && !empty($description) )
-		echo '<br /><span class="description">' . $description . '</span>';
+		switch($type){
+			case 'select': 
+			echo "<select id='$slug' name='$slug'>"; 
+			foreach($options as $key => $option_value){
+				echo "<option value='$key' ".($key == $value ? 'selected' : '').">$option_value</option>";
+			}
+			echo '</select>';
+			if ( isset($description) && !empty($description) )
+			echo '<br /><span class="description">' . $description . '</span>';
+			break;
+			default:
+			echo "<input type='$type' id='$slug' name='$slug' value='$value'>"; 
+			if ( isset($description) && !empty($description) )
+			echo '<br /><span class="description">' . $description . '</span>';
+		}
+		
 	}
 }
 ?>
