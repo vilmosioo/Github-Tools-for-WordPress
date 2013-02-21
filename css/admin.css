@@ -1,0 +1,4 @@
+/* This stylesheet is used to style the admin option form of the plugin. */
+#github-tools-information-bar{ display:none;}
+.github-tools-image{ vertical-align: middle;  margin:-3px 5px 0 5px; display:none;}
+#github-tools-feedback{ display:none;}

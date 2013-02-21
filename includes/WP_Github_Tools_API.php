@@ -5,7 +5,6 @@
 * Uses the github api to retrieve public gists, repos or commits for a specific user
 */
 class WP_Github_Tools_API{
-    // TODO create function check rate
 	static function get_data($url){
         $base = "https://api.github.com/";
         $response = wp_remote_get($base . $url, array( 'sslverify' => false ));

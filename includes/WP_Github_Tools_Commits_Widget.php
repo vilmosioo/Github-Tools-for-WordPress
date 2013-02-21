@@ -80,20 +80,23 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 		if($this->github_username){
 			$s = "<ul class='github-commits github-commits-$repository'>";
             $repositories = get_option('WP_Github_Tools');
-            // TODO Handle error properly
-            if(!isset($repositories) || !is_array($repositories)) return;
-            $repositories = $repositories['repositories'];
-			if(!is_array($repositories)) return;
-			$commits = $repositories[$instance[$name]]['commits'];
-			if(!is_array($commits)) return;
-			$commits = array_slice($commits, 0, $count);
-			foreach($commits as $commit){
-				if(!is_array($commit)) return; // could not retrieve commits, die silently
-				$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
-				$commit = $commit['commit'];
-				$msg = $commit['message'];
-				$s .= "<li class='commit'><a href='$url' title='$msg'>$msg</a></li>";
-			}	
+            if(is_array($repositories)){
+	            $repositories = $repositories['repositories'];
+				if(is_array($repositories)){ 
+					$commits = $repositories[$instance[$name]]['commits'];
+					if(is_array($commits)){
+						$commits = array_slice($commits, 0, $count);
+						foreach($commits as $commit){
+							if(is_array($commit)){
+								$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
+								$commit = $commit['commit'];
+								$msg = $commit['message'];
+								$s .= "<li class='commit'><a href='$url' title='$msg'>$msg</a></li>";
+							}
+						}	
+					}
+				}
+			}
 			$s .= '</ul>';
 			echo $s;
 		}

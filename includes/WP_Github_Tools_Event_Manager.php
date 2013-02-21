@@ -2,6 +2,7 @@
 /*
 * Event Manager
 * 
+* It's purpose is to cache github data in the wp database and update it periodically as set by the user
 */
 class WP_Github_Tools_Event_Manager{
     private $slug = 'WP_Github_Tools';

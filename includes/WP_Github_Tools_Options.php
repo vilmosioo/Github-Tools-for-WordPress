@@ -1,8 +1,8 @@
 <?php
 /*
-* Theme options
+* Plugin options
 * 
-* Loads default settings for the Hyperion theme 
+* Allows the user to set a github username and refresh rate for the plugin.
 */
 class WP_Github_Tools_Options{
 	
@@ -140,6 +140,7 @@ class WP_Github_Tools_Options{
 
 	function section_handler($args){
 		echo "<div id=\"icon-options-general\" class=\"icon32\"><br></div><h2>$this->title</h2>";
+		echo "<div id='github-tools-information-bar' class='error'></div>";
 	}
 
 	function input_handler($args){
@@ -149,18 +150,23 @@ class WP_Github_Tools_Options{
 		$slug = $this->slug."[$slug]";
 		switch($type){
 			case 'select': 
-			echo "<select id='$slug' name='$slug'>"; 
-			foreach($options as $key => $option_value){
-				echo "<option value='$key' ".($key == $value ? 'selected' : '').">$option_value</option>";
-			}
-			echo '</select>';
-			if ( isset($description) && !empty($description) )
-			echo '<br /><span class="description">' . $description . '</span>';
+				echo "<select id='$slug' name='$slug'>"; 
+				foreach($options as $key => $option_value){
+					echo "<option value='$key' ".($key == $value ? 'selected' : '').">$option_value</option>";
+				}
+				echo '</select>';
+				if ( isset($description) && !empty($description) )
+				echo '<br /><span class="description">' . $description . '</span>';
 			break;
 			default:
-			echo "<input type='$type' id='$slug' name='$slug' value='$value'>"; 
-			if ( isset($description) && !empty($description) )
-			echo '<br /><span class="description">' . $description . '</span>';
+				echo "<input type='$type' id='$slug' name='$slug' value='$value'>"; 
+				echo "<img alt=\"\" id='github-tools-yes' class='github-tools-image' src=\"".admin_url()."images/yes.png\">";
+				echo "<img alt=\"\" id='github-tools-no' class='github-tools-image' src=\"".admin_url()."images/no.png\">";
+				echo "<img alt=\"\" id='github-tools-loading' class='github-tools-image' src=\"".admin_url()."images/wpspin_light.gif\">";
+				echo "<span id='github-tools-feedback'></span>";
+
+				if ( isset($description) && !empty($description) )
+				echo '<br /><span class="description">' . $description . '</span>';
 		}
 		
 	}
