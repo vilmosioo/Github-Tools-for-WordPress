@@ -1,12 +1,4 @@
-# GitHub Tools for WordPress
-
-Contributors: vilmosioo
-Tags: github, tool, widget, repository, commit, gist
-Requires at least: 3.4.2
-Tested up to: 3.5.1
-Stable tag: trunk
-License: GPLv2 or later
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4K8F8YQMP84CJ
+# WP GitHub Tools
 
 A plugin that inserts dynamic updates for any GitHub repository. 
 
