@@ -59,9 +59,9 @@ Or follow updates on [Twitter](http://twitter.com/vilmosioo)!
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
+1. Commits shortcode in action. An un-onrdered list of the latest commits is displayed, that you can style as you please using CSS.
+2. The settings page where you specify your Github username and refresh rate.
+3. The commits widget that you can use on any sidebar to deliver live updates for your projects.
 
 == Changelog ==
 

@@ -1,13 +1,12 @@
 <?php
 /*
 Plugin Name: Github Tools for WordPress
-Plugin URI: http://vilmosioo.co.uk
-Description: A plugin that creates dinamic changelogs for any github repositories. Use the custom widget to display a list of the latest updates friom a repository. Use shortcodes to add commit lists and gists. See the documentation for more information.
+Plugin URI: http://vilmosioo.co.uk/github-tools-for-wordpress
+Description: A plugin that creates live updates for any github repository. 
 Version: 1.0
 Author: Vilmos Ioo
 Author URI: http://vilmosioo.co.uk
 Author Email: ioo.vilmos@gmail.com
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4K8F8YQMP84CJ
 License: GPL2
 
   Copyright 2013 Vilmos Ioo  (email : ioo.vilmos@gmail.com)

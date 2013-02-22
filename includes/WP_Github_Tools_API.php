@@ -20,7 +20,6 @@ class WP_Github_Tools_API{
         return false;
     }
 
-    // Get the json from github for the repos
     static function get_repos($user) {
     	return self::get_data("users/$user/repos");
     }
@@ -29,7 +28,6 @@ class WP_Github_Tools_API{
         return self::get_data("users/$user");
     }
 
-    // Get the name of the repo that we'll use in the request url
     static function get_commits($repo, $user){
         return self::get_data("repos/$user/$repo/commits");
     }

@@ -41,7 +41,6 @@ class WP_Github_Tools_Options{
 			)
 		);
 
-		// initialise options
 		if(!get_option($this->slug)){
 			$temp = array();
 			foreach ($this->options as $option) {
@@ -50,7 +49,6 @@ class WP_Github_Tools_Options{
 			update_option($this->slug, $temp);
 		}
 
-		// add ajax functionality
 		add_action('wp_ajax_verify_github_username', array(&$this, 'verify_github_username'));	
 	}
 
@@ -69,7 +67,6 @@ class WP_Github_Tools_Options{
 		die(); // this is required to return a proper result
 	}
 
-	// Parameters : slug, name, description, tab
 	function addField($args = array()){
 		$args = array_merge ( array(
 	      "slug" => 'option',
@@ -81,11 +78,6 @@ class WP_Github_Tools_Options{
         $this->options[$args['slug']] = $args;
 	}
 
-	/*
-	* Init function
-	* 
-	* Initializes the theme's options. Called on admin menu action.
-	*/
 	function start(){
 		// add_theme_page( $page_title, $menu_title, $capability, $menu_slug, $function);
 		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
@@ -93,17 +85,11 @@ class WP_Github_Tools_Options{
 		add_action( "admin_print_scripts-$page", array(&$this, 'settings_styles_and_scripts'));
 	}
 
-	// loads style/script on the settings page
 	function settings_styles_and_scripts(){
 		wp_enqueue_script('github-tools-settings-page-script', VI_GITHUB_COMMITS_URL. 'js/admin.js');
 		wp_enqueue_style('github-tools-settings-page-style', VI_GITHUB_COMMITS_URL. 'css/admin.css');
 	}
 
-	/*
-	* Settings page set up
-	*
-	* Handles the display of the Theme Options page (under Appearance)
-	*/
 	function settings_page_setup() {
 		echo '<div class="wrap">';
 		if ( isset( $_GET['settings-updated'] ) ) {
@@ -121,11 +107,6 @@ class WP_Github_Tools_Options{
 		<?php 
 	} 
 
-	/*
-	* Register settings
-	* 
-	* Register all settings and setting sections
-	*/
 	function register_mysettings() {
 		// register_setting( $option_group, $option_name, $sanitize_callback ); 
 		register_setting( $this->slug, $this->slug );

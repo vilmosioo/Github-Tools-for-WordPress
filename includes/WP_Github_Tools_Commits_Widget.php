@@ -88,7 +88,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 						$commits = array_slice($commits, 0, $count);
 						foreach($commits as $commit){
 							if(is_array($commit)){
-								$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
+								$url = "https://github.com/".$this->github_username."/".$instance[$name]."/commit/".$commit['sha'];
 								$commit = $commit['commit'];
 								$msg = $commit['message'];
 								$s .= "<li class='commit'><a href='$url' title='$msg'>$msg</a></li>";
