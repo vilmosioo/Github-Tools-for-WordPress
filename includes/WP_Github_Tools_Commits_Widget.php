@@ -13,8 +13,8 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 	function __construct($args = array()) {
 		$args = array_merge ( array(
 			"slug" => 'wp_github_tools_widget',
-			"title" => 'Github Commits',
-			"description" => 'Use this widget to displays a list of the latest commits from your Github repository.',
+			"title" => 'GitHub Commits',
+			"description" => 'Use this widget to displays a list of the latest commits from your GitHub repository.',
 			"class" => 'wp_github_tools_widget'
 	    ), $args );
 		
@@ -145,7 +145,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 	<?php
 
 		if(!$this->github_username){
-			echo "<p class='error'>Please <a href='".admin_url('profile.php#github')."'>enter your Github username</a> to retrieve the list of repositories.</p>";
+			echo "<p class='error'>Please <a href='".admin_url('profile.php#github')."'>enter your GitHub username</a> to retrieve the list of repositories.</p>";
 		}
 		foreach($this->fields as $field){
 			$name = is_array($field) ? $field['name'] : $field;

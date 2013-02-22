@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Github Tools for WordPress
+Plugin Name: WP GitHub Tools
 Plugin URI: http://vilmosioo.co.uk/github-tools-for-wordpress
-Description: A plugin that creates live updates for any github repository. 
+Description: A plugin that creates live updates for any GitHub repository. 
 Version: 1.0
 Author: Vilmos Ioo
 Author URI: http://vilmosioo.co.uk

@@ -2,7 +2,7 @@
 /*
 * Plugin options
 * 
-* Allows the user to set a github username and refresh rate for the plugin.
+* Allows the user to set a GitHub username and refresh rate for the plugin.
 */
 class WP_Github_Tools_Options{
 	
@@ -12,7 +12,7 @@ class WP_Github_Tools_Options{
 
 	private $options = array();
 	private $slug = 'WP_Github_Tools_Settings';
-	private $title = 'Github Tools';
+	private $title = 'GitHub Tools';
 
 	private function __construct(){
 		if(!is_admin()) return;
@@ -21,8 +21,8 @@ class WP_Github_Tools_Options{
 		$this->addField(
 			array(
 				'slug' => 'github', 
-				'name' => 'Github username',
-				'description' => 'Your github\'s account username (required)',
+				'name' => 'GitHub username',
+				'description' => 'Your GitHub\'s account username (required)',
 			)
 		);
 
