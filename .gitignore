@@ -1,3 +1,5 @@
+wp-github-tools/
+
 # Numerous always-ignore extensions
 *.diff
 *.err
