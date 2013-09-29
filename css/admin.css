@@ -2,3 +2,13 @@
 #github-tools-information-bar{ display:none;}
 .github-tools-image{ vertical-align: middle;  margin:-3px 5px 0 5px; display:none;}
 #github-tools-feedback{ display:none;}
+
+.commits{
+	list-style: disc;
+	padding-left: 40px;
+}
+
+.commits li{
+	margin:0 0 5px 0;
+	padding:0;
+}

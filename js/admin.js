@@ -7,7 +7,7 @@
 		};
 
 		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-		$('#WP_Github_Tools_Settings\\[github\\]').blur(function(){
+		$('#WP_Github_Tools_Settingsgeneral\\[github-username\\]').blur(function(){
 				data.github = $(this).val();
 				$('#github-tools-feedback').hide();
 				$(".github-tools-image").hide();

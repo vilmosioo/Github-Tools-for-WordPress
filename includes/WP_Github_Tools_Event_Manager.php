@@ -4,6 +4,9 @@
 * 
 * It's purpose is to cache github data in the wp database and update it periodically as set by the user
 */
+
+require_once 'WP_Github_Tools_Options.php';
+
 class WP_Github_Tools_Event_Manager{
     private $slug = 'WP_Github_Tools';
     private $hook = 'event-manager';
@@ -11,9 +14,9 @@ class WP_Github_Tools_Event_Manager{
 	private function __construct(){
 	   
         add_action( $this->hook, array(&$this, 'refresh') );  
-        $set_schedule = get_option('WP_Github_Tools_Settings');
-        $set_schedule = $set_schedule['refresh'];
-            
+        $set_schedule = get_option(WP_Github_Tools_Options::ID.'general');
+        $set_schedule = $set_schedule['refresh-rate'];
+        
         if( !wp_next_scheduled( $this->hook ) ) { 
             if(!$set_schedule) $set_schedule = 'daily'; 
 	        wp_schedule_event( time(), $set_schedule, $this->hook ); 
@@ -44,8 +47,8 @@ class WP_Github_Tools_Event_Manager{
             update_option($this->slug, $options);
         }
         
-        $github = get_option('WP_Github_Tools_Settings');
-        $github = $github['github'];
+        $github = get_option(WP_Github_Tools_Options::ID.'general');
+        $github = $github['github-username'];
 
         if(isset($github) && !empty($github) && WP_Github_Tools_API::can_update()){
             $options['gists'] = WP_Github_Tools_API::get_gists($github);
