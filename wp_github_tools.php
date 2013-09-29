@@ -9,21 +9,21 @@ Author URI: http://vilmosioo.co.uk
 Author Email: ioo.vilmos@gmail.com
 License: GPL2
 
-  Copyright 2013 Vilmos Ioo  (email : ioo.vilmos@gmail.com)
+	Copyright 2013 Vilmos Ioo  (email : ioo.vilmos@gmail.com)
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License, version 2, as 
-  published by the Free Software Foundation.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License, version 2, as 
+	published by the Free Software Foundation.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-  
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	
 */
 
 // Define constants
@@ -66,25 +66,24 @@ class WP_Github_Tools {
 		WP_Github_Tools_Event_Manager::init();
 		// add settings page
 		WP_Github_Tools_Options::init();
-
 	} 
 	
 	function action_links($links, $file) {
-    static $this_plugin;
+		static $this_plugin;
 
-    if (!$this_plugin) {
-        $this_plugin = plugin_basename(__FILE__);
-    }
+		if (!$this_plugin) {
+				$this_plugin = plugin_basename(__FILE__);
+		}
 
-    if ($file == $this_plugin) {
-      // The "page" query string value must be equal to the slug
-      // of the Settings admin page we defined earlier, which in
-      // this case equals "myplugin-settings".
-      $settings_link = '<a href="' .admin_url('tools.php?page=WP_Github_Tools_Settings').'">Settings</a>';
-      array_unshift($links, $settings_link);
-    }
+		if ($file == $this_plugin) {
+			// The "page" query string value must be equal to the slug
+			// of the Settings admin page we defined earlier, which in
+			// this case equals "myplugin-settings".
+			$settings_link = '<a href="' .admin_url('tools.php?page=WP_Github_Tools_Settings').'">Settings</a>';
+			array_unshift($links, $settings_link);
+		}
 
-    return $links;
+		return $links;
 	}
 
 	// create custom shortcodes
@@ -96,7 +95,7 @@ class WP_Github_Tools {
 	// create custom shortcodes
 	function print_commits( $atts, $content = null ) {
 		$github = get_option('WP_Github_Tools_Settings');
-    $github = $github['github'];
+		$github = $github['github'];
 		if(!isset($github) || empty($github)) return;
 		
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => 'Latest updates'), $atts));
@@ -104,8 +103,8 @@ class WP_Github_Tools {
 
 		$s = "<h2>$title</h2><ul class='github-commits github-commits-$repository'>";
 		$repositories = get_option('WP_Github_Tools');
-    if(!isset($repositories) || !is_array($repositories)) return;
-    $repositories = $repositories['repositories'];
+		if(!isset($repositories) || !is_array($repositories)) return;
+		$repositories = $repositories['repositories'];
 		if(!is_array($repositories)) return;
 		$commits = $repositories[$repository]['commits'];
 		if(!is_array($commits)) return;
@@ -129,13 +128,13 @@ class WP_Github_Tools {
 	
 	// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
-    $github = get_option('WP_Github_Tools_Settings');
-    $github = $github['github'];
+		$github = get_option('WP_Github_Tools_Settings');
+		$github = $github['github'];
 
 		global $current_user ;
 		$user_id = $current_user->ID;
 
-    if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
+		if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
 			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('tools.php?page=WP_Github_Tools_Settings#github').'">Do it now</a>. | <a href="?wp_github_tools_ignore_notice=0">Hide Notice</a></div>';
 		} 
 	}
@@ -144,12 +143,12 @@ class WP_Github_Tools {
 	* Listen to dismiss action
 	*/
 	function dismiss_notification() {
-	  global $current_user;
-	  $user_id = $current_user->ID;
-	  /* If user clicks to ignore the notice, add that to their user meta */
-	  if ( isset($_GET['wp_github_tools_ignore_notice']) && '0' == $_GET['wp_github_tools_ignore_notice'] ) {
+		global $current_user;
+		$user_id = $current_user->ID;
+		/* If user clicks to ignore the notice, add that to their user meta */
+		if ( isset($_GET['wp_github_tools_ignore_notice']) && '0' == $_GET['wp_github_tools_ignore_notice'] ) {
 			add_user_meta($user_id, 'wp_github_tools_ignore_notice', 'true', true);
-	  }
+		}
 	}
 
 	/**
