@@ -98,6 +98,13 @@ class WP_Github_Tools_Options{
 		add_action('wp_ajax_verify_github_username', array(&$this, 'verify_github_username'));	
 	}
 
+	function settings_saved()
+	{
+		if(isset($_GET['settings-updated']) && $_GET['settings-updated']){
+			WP_Github_Tools_Event_Manager::delete_event();
+		}
+	}
+
 	// Add a new tab. 
 	// Parameters : tab name, description, option array
 	public function addTab($args = array()){
@@ -161,6 +168,7 @@ class WP_Github_Tools_Options{
 		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
 		$page = add_management_page(self::TITLE, self::TITLE, 'administrator', self::ID, array(&$this, 'settings_page_setup'));
 		add_action( "admin_print_scripts-$page", array(&$this, 'settings_styles_and_scripts'));
+		add_action('load-'.$page, array(&$this, 'settings_saved'));
 	}
 
 	function settings_styles_and_scripts(){
