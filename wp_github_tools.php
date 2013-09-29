@@ -29,6 +29,7 @@ License: GPL2
 // Define constants
 define('VI_GITHUB_COMMITS_DIR', plugin_dir_path(__FILE__));
 define('VI_GITHUB_COMMITS_URL', plugin_dir_url(__FILE__));
+define('VI_VERSION', get_bloginfo( 'version' ));
 
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
@@ -45,18 +46,27 @@ class WP_Github_Tools {
 	 * Initializes the plugin by setting localization, filters, and administration functions.
 	 */
 	private function __construct() {
-		register_activation_hook( __FILE__, array( &$this, 'activate' ) );
-		register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
-		register_uninstall_hook( __FILE__, array( &$this, 'uninstall' ) );
+		register_activation_hook(__FILE__, array( &$this, 'activate' ) );
+		register_deactivation_hook(__FILE__, array( &$this, 'deactivate' ) );
+		register_uninstall_hook(__FILE__, array( &$this, 'uninstall' ) );
+
+		// check for github username
+		// Don't run on WP < 3.3
+		if (VI_VERSION < '3.3'){
+			// use standard notification
+			add_action('admin_notices', array(&$this, 'check_github_field') );
+			add_action('admin_init', array(&$this, 'dismiss_notification'));
+		} else {
+			// use new notification
+			add_action('admin_enqueue_scripts', array( &$this, 'display_notice' ) );
+			add_action('wp_ajax_dismiss_wp_github_tools', array( $this, 'handle_notice_dismiss' ) );
+		}
 
 		// Add a settings link in the plugin page
+		add_action('WP_Github_Tools_Activated', array(&$this, 'plugin_activated'));
+		// Add a settings link in the plugin page
 		add_filter('plugin_action_links', array(&$this, 'action_links'), 10, 2);
-
-		// add github username
-		add_action( 'admin_notices', array(&$this, 'check_github_field') );
-		// check for dismiss action
-		add_action('admin_init', array(&$this, 'dismiss_notification'));
-		// create gist  shortcode [gist id='#']
+			// create gist  shortcode [gist id='#']
 		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
 		add_shortcode('commits', array( &$this, 'print_commits' ));
@@ -67,12 +77,78 @@ class WP_Github_Tools {
 		// add settings page
 		WP_Github_Tools_Options::init();
 	} 
-	
+
+	/**
+	* Handle the user dismiss action
+	*/
+	public function handle_notice_dismiss(){
+		global $current_user ;
+		$user_id = $current_user->ID;
+
+		/* If user clicks to ignore the notice, add that to their user meta */
+		add_user_meta($user_id, 'wp_github_tools_ignore_notice', 'true', true);
+
+		exit;
+	}
+
+	/**
+	* Check for the existence of a github username and display a notice if there isn't
+	*/
+	public function display_notice(){
+		$github = get_option('WP_Github_Tools_Settings');
+		$github = $github['github'];
+
+		global $current_user ;
+		$user_id = $current_user->ID;
+
+		// todo delete
+		// delete_user_meta($user_id, 'wp_github_tools_ignore_notice');
+		
+		if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
+
+			// add JavaScript for WP Pointers
+			wp_enqueue_script( 'wp-pointer' );
+			// add CSS for WP Pointers
+			wp_enqueue_style( 'wp-pointer' );
+			add_action( 'admin_print_footer_scripts', array( &$this, 'notice_footer_script' ) );
+		}
+	}
+
+	/**
+	* Display notice for the user
+	*/
+	public function notice_footer_script(){
+		// Build the main content of your pointer balloon in a variable
+		$pointer_content = '<h3>Connect to Github</h3>'; // Title should be <h3> for proper formatting.
+		$pointer_content .= "<p>Thank you for using Github Tools for WordPress. Please go to the plugin\'s settings page to connect to Github!</p>";
+		?>
+		<script type="text/javascript">// <![CDATA[
+		jQuery(document).ready(function($) {
+		/* make sure pointers will actually work and have content */
+		if(typeof(jQuery().pointer) != 'undefined') {
+			$('#menu-tools').pointer({
+			content: '<?php echo $pointer_content; ?>',
+			position: {
+				edge: 'left',
+				align: 'center'
+			},
+			close: function() {
+				$.post( ajaxurl, {
+					action: 'dismiss_wp_github_tools'
+				});
+			}
+			}).pointer('open');
+		}
+		});
+		// ]]></script>
+		<?php
+	}
+
 	function action_links($links, $file) {
 		static $this_plugin;
 
 		if (!$this_plugin) {
-				$this_plugin = plugin_basename(__FILE__);
+			$this_plugin = plugin_basename(__FILE__);
 		}
 
 		if ($file == $this_plugin) {
@@ -120,14 +196,14 @@ class WP_Github_Tools {
 		$s .= '</ul>';
 
 		return $s;
-	}
+		}
 
-	function register_widgets(){
+		function register_widgets(){
 		register_widget( 'WP_Github_Tools_Commits_Widget' ); 
-	}
-	
-	// Displays a welcome message to prompt the user to enter a github username
-	function check_github_field(){
+		}
+		
+		// Displays a welcome message to prompt the user to enter a github username
+		function check_github_field(){
 		$github = get_option('WP_Github_Tools_Settings');
 		$github = $github['github'];
 
@@ -156,15 +232,23 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	static function activate( $network_wide ) {
+	public function activate( $network_wide ) {
+		do_action('WP_Github_Tools_Activated');
 	} 
 	
+	public function plugin_activated(){
+		global $current_user;
+		$user_id = $current_user->ID;
+		delete_user_meta($user_id, 'wp_github_tools_ignore_notice');
+	}
+
 	/**
 	 * Fired when the plugin is deactivated.
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	static function deactivate( $network_wide ) {
+	function deactivate( $network_wide ) {
+		do_action('WP_Github_Tools_Deactivated');
 	} 
 	
 	/**
@@ -172,7 +256,7 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	static function uninstall( $network_wide ) {
+	function uninstall( $network_wide ) {
 		delete_option('WP_Github_Tools_Settings');
 		delete_option('WP_Github_Tools');
 
