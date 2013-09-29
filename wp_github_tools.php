@@ -54,6 +54,8 @@ class WP_Github_Tools {
 
 		// add github username
 		add_action( 'admin_notices', array(&$this, 'check_github_field') );
+		// check for dismiss action
+		add_action('admin_init', array(&$this, 'dismiss_notification'));
 		// create gist  shortcode [gist id='#']
 		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
@@ -68,21 +70,21 @@ class WP_Github_Tools {
 	} 
 	
 	function action_links($links, $file) {
-	    static $this_plugin;
+    static $this_plugin;
 
-	    if (!$this_plugin) {
-	        $this_plugin = plugin_basename(__FILE__);
-	    }
+    if (!$this_plugin) {
+        $this_plugin = plugin_basename(__FILE__);
+    }
 
-	    if ($file == $this_plugin) {
-	        // The "page" query string value must be equal to the slug
-	        // of the Settings admin page we defined earlier, which in
-	        // this case equals "myplugin-settings".
-	        $settings_link = '<a href="' .admin_url('tools.php?page=WP_Github_Tools_Settings').'">Settings</a>';
-	        array_unshift($links, $settings_link);
-	    }
+    if ($file == $this_plugin) {
+      // The "page" query string value must be equal to the slug
+      // of the Settings admin page we defined earlier, which in
+      // this case equals "myplugin-settings".
+      $settings_link = '<a href="' .admin_url('tools.php?page=WP_Github_Tools_Settings').'">Settings</a>';
+      array_unshift($links, $settings_link);
+    }
 
-	    return $links;
+    return $links;
 	}
 
 	// create custom shortcodes
@@ -90,10 +92,11 @@ class WP_Github_Tools {
 		extract(shortcode_atts(array('id' => ''), $atts));
 		return $id ? "<script src=\"http://gist.github.com/$id.js\"></script>" : "";
 	}
+
 	// create custom shortcodes
 	function print_commits( $atts, $content = null ) {
 		$github = get_option('WP_Github_Tools_Settings');
-        $github = $github['github'];
+    $github = $github['github'];
 		if(!isset($github) || empty($github)) return;
 		
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => 'Latest updates'), $atts));
@@ -101,8 +104,8 @@ class WP_Github_Tools {
 
 		$s = "<h2>$title</h2><ul class='github-commits github-commits-$repository'>";
 		$repositories = get_option('WP_Github_Tools');
-        if(!isset($repositories) || !is_array($repositories)) return;
-        $repositories = $repositories['repositories'];
+    if(!isset($repositories) || !is_array($repositories)) return;
+    $repositories = $repositories['repositories'];
 		if(!is_array($repositories)) return;
 		$commits = $repositories[$repository]['commits'];
 		if(!is_array($commits)) return;
@@ -126,11 +129,27 @@ class WP_Github_Tools {
 	
 	// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
-        $github = get_option('WP_Github_Tools_Settings');
-        $github = $github['github'];
-        if(!isset($github) || empty($github)){
-			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('tools.php?page=WP_Github_Tools_Settings#github').'">Do it now</a>.</div>';
+    $github = get_option('WP_Github_Tools_Settings');
+    $github = $github['github'];
+
+		global $current_user ;
+		$user_id = $current_user->ID;
+
+    if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
+			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('tools.php?page=WP_Github_Tools_Settings#github').'">Do it now</a>. | <a href="?wp_github_tools_ignore_notice=0">Hide Notice</a></div>';
 		} 
+	}
+
+	/**
+	* Listen to dismiss action
+	*/
+	function dismiss_notification() {
+	  global $current_user;
+	  $user_id = $current_user->ID;
+	  /* If user clicks to ignore the notice, add that to their user meta */
+	  if ( isset($_GET['wp_github_tools_ignore_notice']) && '0' == $_GET['wp_github_tools_ignore_notice'] ) {
+			add_user_meta($user_id, 'wp_github_tools_ignore_notice', 'true', true);
+	  }
 	}
 
 	/**
