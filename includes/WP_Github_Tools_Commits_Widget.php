@@ -40,7 +40,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 			array( 'description' => $this->description, 'class' => $this->class ) // Args
 		);
 
-		$github = get_option(WP_Github_Tools_Options::ID.'general');
+		$github = get_option(WP_Github_Tools_Options::GENERAL);
 		$github = $github['github-username'];
 		if(isset($github) && !empty($github)){
 			$this->github_username = $github;

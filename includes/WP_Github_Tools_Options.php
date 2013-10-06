@@ -22,6 +22,7 @@ class WP_Github_Tools_Options{
 
 	const ID = 'WP_Github_Tools_Settings';
 	const TITLE = 'GitHub Tools';
+	const GENERAL = 'WP_Github_Tools_Settingsgeneral';
 
 	private function __construct(){
 		if(!is_admin()) return;

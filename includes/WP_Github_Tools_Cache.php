@@ -3,6 +3,9 @@
 * Cache manager
 */
 class WP_Github_Tools_Cache{
+
+	const ID = 'WP_Github_Tools';
+
 	/**
 	* Return the cache, refresh if required
 	*/
@@ -15,6 +18,6 @@ class WP_Github_Tools_Cache{
 	}
 
 	static function clear(){
-		
+
 	}
 }

@@ -95,7 +95,7 @@ class WP_Github_Tools {
 	* Check for the existence of a github username and display a notice if there isn't
 	*/
 	public function display_notice(){
-		$github = get_option(WP_Github_Tools_Options::ID.'general');
+		$github = get_option(WP_Github_Tools_Options::GENERAL);
 		$github = $github['github-username'];
 
 		global $current_user ;
@@ -155,7 +155,7 @@ class WP_Github_Tools {
 			// The "page" query string value must be equal to the slug
 			// of the Settings admin page we defined earlier, which in
 			// this case equals "myplugin-settings".
-			$settings_link = '<a href="' .admin_url('tools.php?page='.WP_Github_Tools_Options::ID.'general').'">Settings</a>';
+			$settings_link = '<a href="' .admin_url('tools.php?page='.WP_Github_Tools_Options::GENERAL).'">Settings</a>';
 			array_unshift($links, $settings_link);
 		}
 
@@ -170,7 +170,7 @@ class WP_Github_Tools {
 
 	// create custom shortcodes
 	function print_commits( $atts, $content = null ) {
-		$github = get_option(WP_Github_Tools_Options::ID.'general');
+		$github = get_option(WP_Github_Tools_Options::GENERAL);
 		$github = $github['github-username'];
 		if(!isset($github) || empty($github)) return;
 		
@@ -204,7 +204,7 @@ class WP_Github_Tools {
 		
 		// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
-		$github = get_option(WP_Github_Tools_Options::ID.'general');
+		$github = get_option(WP_Github_Tools_Options::GENERAL);
 		$github = $github['github-username'];
 
 		global $current_user ;
@@ -257,7 +257,7 @@ class WP_Github_Tools {
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
 	function uninstall( $network_wide ) {
-		delete_option(WP_Github_Tools_Options::ID.'general');
+		delete_option(WP_Github_Tools_Options::GENERAL);
 		WP_Github_Tools_Cache::clear_cache();
 	} 
 
