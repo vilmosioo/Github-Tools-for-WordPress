@@ -177,7 +177,8 @@ class WP_Github_Tools {
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => 'Latest updates'), $atts));
 		if(!isset($repository) || empty($repository)) return;
 
-		$s = "<h2>$title</h2><ul class='github-commits github-commits-$repository'>";
+		$s = "<h3>$title</h3><ul class='github-commits github-commits-$repository'>";
+
 		$repositories = WP_Github_Tools_Cache::get_cache();
 		if(!isset($repositories) || !is_array($repositories)) return;
 		$repositories = $repositories['repositories'];
@@ -194,6 +195,8 @@ class WP_Github_Tools {
 			$s .= "<li class='commit'><span class='date'>$date</span> <a href='$url' title='$msg'>$msg</a></li>";
 		}	
 		$s .= '</ul>';
+
+		$s .= "<p><a href='https://github.com/$github/$repository/' title='View on Github'>View on Github</a></p>";
 
 		return $s;
 	}

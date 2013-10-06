@@ -62,18 +62,7 @@ class WP_Github_Tools_Options{
 			
 			if(is_array(@$cache['repositories']))
 			foreach (@$cache['repositories'] as $name => $repository) {
-				$str .= '<h3><a href="'.$repository['html_url'].'" title="'.$name.'">'.$name.'</a></h3>';
-				$str .= '<p>'.count(@$repository['commits']).' commits in total</p><ul class="commits">';
-				$i = 0;
-				if(is_array(@$repository['commits']))
-				foreach (@$repository['commits'] as $key => $commit) {
-					$str .= '<li>'.@$commit['commit']['message'].'</li>';
-					if($i++ > 6){
-						$cache .= '<li>...</li>';
-						break;
-					}
-				}
-				$str .= '</ul>';
+				$str .= @do_shortcode("[commits repository='$name' count='5' title='$name']");
 			}
 		}
 		
@@ -102,7 +91,7 @@ class WP_Github_Tools_Options{
 	function settings_saved()
 	{
 		if(isset($_GET['settings-updated']) && $_GET['settings-updated']){
-			// TODO Remove all transients
+			WP_Github_Tools_Cache::clear();
 		}
 	}
 
