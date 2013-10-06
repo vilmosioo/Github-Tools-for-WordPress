@@ -33,7 +33,7 @@ class WP_Github_Tools_Options{
 		
 		$temp = array();
 		foreach (wp_get_schedules() as $key => $value) {
-			$temp[$key] = $value['display'];
+			$temp[$value['display']] = $value['interval'];
 		}
 
 		$this->addTab(array(
@@ -255,7 +255,7 @@ class WP_Github_Tools_Options{
 			case 'select': 
 				echo "<select id='$name' name='$name'>"; 
 				foreach($options as $key => $option_value){
-					echo "<option value='$key' ".($key == $value ? 'selected' : '').">$option_value</option>";
+					echo "<option value='$option_value' ".($option_value == $value ? 'selected' : '').">$key</option>";
 				}
 				echo '</select>';
 				if ( isset($description) && !empty($description) )
