@@ -16,7 +16,9 @@ class WP_Github_Tools_API{
         // check for rate limit
         $base = "https://api.github.com/";
         $rate = wp_remote_get($base . "rate_limit", array( 'sslverify' => false ));
-        if($rate['response']['code'] == 200) return true;
+        if($rate['response']['code'] == 200){
+            return $rate['headers']['x-ratelimit-remaining'] !== "0";
+        }
         return false;
     }
 
