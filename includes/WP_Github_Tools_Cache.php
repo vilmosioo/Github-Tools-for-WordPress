@@ -14,7 +14,7 @@ class WP_Github_Tools_Cache{
 	* Return the cache, refresh if required
 	*/
 	static function get_cache(){
-		$cache = get_transient(self::ID);
+		$cache = self::get_transient(self::ID);
 		if (empty($cache)){
 			$cache = array(
 				'last_update' => gmdate("Y-m-d\TH:i:s\Z", current_time( 'timestamp' )),
@@ -35,13 +35,40 @@ class WP_Github_Tools_Cache{
 					if(!is_array($repo)) return;
 					$cache['repositories'][$repo['name']]['commits'] = WP_Github_Tools_API::get_commits($repo['name'], $github);
 				}
-				set_transient(self::ID, $cache, $rate);
+				self::set_transient(self::ID, $cache, $rate);
 			}
 		}
 		return $cache;
 	}
 
 	static function clear(){
-		delete_transient(self::ID);
+		self::delete_transient(self::ID);
+	}
+
+	/**
+	* Wrapper for transient API
+	*/
+	static function get_transient($key){
+		if(is_multisite()){
+			return get_site_transient($key);
+		} else {
+			return get_transient($key);
+		}
+	}
+	
+	static function set_transient($key, $value, $timeout){
+		if(is_multisite()){
+			return set_site_transient($key, $value, $timeout);
+		} else {
+			return set_transient($key, $value, $timeout);
+		}
+	}
+	
+	static function delete_transient($key){
+		if(is_multisite()){
+			return delete_site_transient($key);
+		} else {
+			return delete_transient($key);
+		}
 	}
 }
