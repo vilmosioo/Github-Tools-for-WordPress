@@ -33,7 +33,6 @@ define('VI_VERSION', get_bloginfo( 'version' ));
 
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
-require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Event_Manager.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 
 class WP_Github_Tools {
@@ -72,8 +71,6 @@ class WP_Github_Tools {
 		add_shortcode('commits', array( &$this, 'print_commits' ));
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
-		// schedule automatic updating
-		WP_Github_Tools_Event_Manager::init();
 		// add settings page
 		WP_Github_Tools_Options::init();
 	} 
@@ -259,8 +256,6 @@ class WP_Github_Tools {
 	function uninstall( $network_wide ) {
 		delete_option(WP_Github_Tools_Options::ID.'general');
 		delete_option('WP_Github_Tools');
-
-		WP_Github_Tools_Event_Manager::delete_event();
 	} 
 
 	/**
@@ -278,6 +273,8 @@ class WP_Github_Tools {
 	}
 	
 } // end class
+
+delete_option('WP_Github_Tools_Settings_general');
 
 $GLOBALS['Github Tools'] = WP_Github_Tools::init();
 ?>

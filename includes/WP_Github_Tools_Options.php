@@ -101,7 +101,7 @@ class WP_Github_Tools_Options{
 	function settings_saved()
 	{
 		if(isset($_GET['settings-updated']) && $_GET['settings-updated']){
-			WP_Github_Tools_Event_Manager::delete_event();
+			// TODO Remove all transients
 		}
 	}
 
