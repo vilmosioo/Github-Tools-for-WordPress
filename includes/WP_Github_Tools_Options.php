@@ -54,7 +54,7 @@ class WP_Github_Tools_Options{
 		// build the cache page
 		
 		$str = ''; 
-		$cache = get_option("WP_Github_Tools");
+		$cache = WP_Github_Tools_Cache::get_cache();
 		if(is_array($cache)){
 			$str .= '<p><strong>Last updated </strong>'.$cache['last_update'];
 			$str .= '<h2>Repositories</h2>';

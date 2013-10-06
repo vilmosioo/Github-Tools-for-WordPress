@@ -34,12 +34,15 @@ define('VI_VERSION', get_bloginfo( 'version' ));
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
 
 class WP_Github_Tools {
 	 
 	static function init(){
 		new WP_Github_Tools();
 	}
+
+	const ID = 'WP_Github_Tools';
 
 	/**
 	 * Initializes the plugin by setting localization, filters, and administration functions.
@@ -175,7 +178,7 @@ class WP_Github_Tools {
 		if(!isset($repository) || empty($repository)) return;
 
 		$s = "<h2>$title</h2><ul class='github-commits github-commits-$repository'>";
-		$repositories = get_option('WP_Github_Tools');
+		$repositories = WP_Github_Tools_Cache::get_cache();
 		if(!isset($repositories) || !is_array($repositories)) return;
 		$repositories = $repositories['repositories'];
 		if(!is_array($repositories)) return;
@@ -255,7 +258,7 @@ class WP_Github_Tools {
 	 */
 	function uninstall( $network_wide ) {
 		delete_option(WP_Github_Tools_Options::ID.'general');
-		delete_option('WP_Github_Tools');
+		WP_Github_Tools_Cache::clear_cache();
 	} 
 
 	/**
@@ -271,10 +274,8 @@ class WP_Github_Tools {
 	function register_admin_scripts() {
 		wp_enqueue_script( 'vi-github-commits-admin-script', VI_GITHUB_COMMITS_DIR.'js/admin.js');
 	}
-	
-} // end class
 
-delete_option('WP_Github_Tools_Settings_general');
+} // end class
 
 $GLOBALS['Github Tools'] = WP_Github_Tools::init();
 ?>

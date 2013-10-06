@@ -44,7 +44,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 		$github = $github['github-username'];
 		if(isset($github) && !empty($github)){
 			$this->github_username = $github;
-			$repositories = get_option('WP_Github_Tools');
+			$repositories = WP_Github_Tools_Cache::get_cache();
 			if(!isset($repositories) || !is_array($repositories)) return;
 			$repositories = $repositories['repositories'];
 			if(!is_array($repositories)) return;
@@ -79,9 +79,9 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 		$count = $instance[$count] ? $instance[$count] : 5;
 		if($this->github_username){
 			$s = "<ul class='github-commits github-commits-$repository'>";
-						$repositories = get_option('WP_Github_Tools');
-						if(is_array($repositories)){
-							$repositories = $repositories['repositories'];
+			$repositories = WP_Github_Tools_Cache::get_cache();
+			if(is_array($repositories)){
+				$repositories = $repositories['repositories'];
 				if(is_array($repositories)){ 
 					$commits = $repositories[$instance[$name]]['commits'];
 					if(is_array($commits)){
