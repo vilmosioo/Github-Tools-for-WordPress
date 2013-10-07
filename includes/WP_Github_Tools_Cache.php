@@ -14,6 +14,8 @@ class WP_Github_Tools_Cache{
 	* Return the cache, refresh if required
 	*/
 	static function get_cache(){
+		// TODO Temporary 
+		// return array();
 		$cache = self::get_transient(self::ID);
 		if (empty($cache)){
 			$cache = array(

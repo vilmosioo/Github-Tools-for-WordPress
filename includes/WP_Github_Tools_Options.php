@@ -38,16 +38,29 @@ class WP_Github_Tools_Options{
 
 		$this->addTab(array(
 			'name' => 'General',
+			'desc' => '<h3>Description</h3>'.
+				'<p>In order to use this plugin, you must allow it to connect to Github on your behalf to retrieve all your repositories and commit history. This is only required once and the application only needs READ access. You can revoke access of this application any time you want.</p>'.
+				'<h3>Steps</h3>'.
+				'<ol>'.
+				'<li><a href="https://github.com/settings/applications/new" title="registered a Github application">Register a new github application</a></li>'.
+				'<li>Copy the client ID and client secret in the form below</li>'.
+				'<li>Save the form</li>'.
+				'<li><a href="">Link your Github account</a></li>'.
+				'</ol><h3>Settings</h3>',
 			'options' => array(
+				array(
+					'name' => 'Client ID',
+					'description' => 'Please enter the client ID from your Github application.',
+				),
+				array(
+					'name' => 'Client Secret',
+					'description' => 'Please enter the client secret from your Github application.',
+				),
 				array(
 					'name' => 'Refresh rate',
 					'description' => 'How often to refresh to repositories.',
 					'type' => 'select',
 					'options' => $temp
-				),
-				array(
-					'name' => 'GitHub username',
-					'description' => 'Your GitHub\'s account username (required)',
 				)
 			)
 		));
@@ -84,8 +97,6 @@ class WP_Github_Tools_Options{
 				update_option( self::ID.$slug, $defaults );
 			}	
 		}
-
-		add_action('wp_ajax_verify_github_username', array(&$this, 'verify_github_username'));	
 	}
 
 	function settings_saved()
@@ -126,31 +137,16 @@ class WP_Github_Tools_Options{
 
 		$args['option'] = array_merge ( array(
 			"name" => 'Option name',
-			"desc" => "",
+			"description" => "",
 			"type" => 'text'
 		), $args['option'] );
 
     $this->tabs[$args['tab']]['options'][self::generate_slug($args['option']['name'])] = array(
 			'name' => $args['option']['name'],
-			'desc' => $args['option']['desc'],
+			'description' => $args['option']['description'],
 			'type' => $args['option']['type'],
 			'options' => $args['option']['options']
 		);
-	}
-
-	function verify_github_username() {
-		global $wpdb; // this is how you get access to the database
-
-		if(!WP_Github_Tools_API::can_update()){
-			$msg['message'] = "API limit reached";
-			echo json_encode($msg);
-			die();
-		}
-		
-		$github = $_POST['github'];
-		echo json_encode(WP_Github_Tools_API::get_user($github));
-
-		die(); // this is required to return a proper result
 	}
 
 	function start(){
@@ -252,11 +248,6 @@ class WP_Github_Tools_Options{
 			break;
 			default:
 				echo "<input type='$type' id='$name' name='$name' value='$value'>"; 
-				echo "<img alt=\"\" id='github-tools-yes' class='github-tools-image' src=\"".admin_url()."images/yes.png\">";
-				echo "<img alt=\"\" id='github-tools-no' class='github-tools-image' src=\"".admin_url()."images/no.png\">";
-				echo "<img alt=\"\" id='github-tools-loading' class='github-tools-image' src=\"".admin_url()."images/wpspin_light.gif\">";
-				echo "<span id='github-tools-feedback'></span>";
-
 				if ( isset($description) && !empty($description) )
 				echo '<br /><span class="description">' . $description . '</span>';
 		}
