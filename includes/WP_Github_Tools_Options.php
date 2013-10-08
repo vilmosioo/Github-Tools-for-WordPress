@@ -36,25 +36,47 @@ class WP_Github_Tools_Options{
 			$temp[$value['display']] = $value['interval'];
 		}
 
+		// determine if client details exist
+		$options = get_option(self::GENERAL);
+		$description = '<h3>Description</h3>'.
+			'<p>In order to use this plugin, you must allow it to connect to Github on your behalf to retrieve all your repositories and commit history. This is only required once and the application only needs READ access. You can revoke access of this application any time you want.</p>'.
+			'<h3>Steps</h3>'.
+			'<ol>'.
+			'<li><a href="https://github.com/settings/applications/new" title="registered a Github application">Register a new github application</a></li>'.
+			'<li><strong>Make sure the redirect uri is: '.urlencode(admin_url('tools.php?page='.self::ID)).'</strong></li>'.
+			'<li>Copy the client ID and client secret in the form below</li>'.
+			'<li>Save the form</li>'.
+			'<li>Once the client data is saved, you can connect this plugin to your Github account.</li>'.
+			'</ol><h3>Settings</h3>';
+		if(is_array($options)){
+			if(!empty($options['access-token'])){
+				$cache = WP_Github_Tools_Cache::get_cache();
+				if(is_array($cache)){
+					$user = $cache['user']['name'];
+					$url = $cache['user']['html_url'];
+					// TODO Add disconnect and check these settings based on cache
+					// TODO Hide entire form if user exists
+					$description = "<h3>You are connected to Gihub as <a href='$url' title='Github profile'>$user</a>!</h3>";	
+				}
+			} else if(!empty($options['client-id']) && !empty($options['client-id'])){
+				$client_id = urlencode($options['client-id']);
+				$url = 'https://github.com/login/oauth/authorize?client_id='.$client_id;
+				$description = '<h3>Connect to Github</h3><p>Looks like you\'re ready to link your Github account!</p>'.
+					'<p><a href="'.$url.'" class="button-primary">Connect to Github</a></p>';
+			} 
+		}
+		
 		$this->addTab(array(
 			'name' => 'General',
-			'desc' => '<h3>Description</h3>'.
-				'<p>In order to use this plugin, you must allow it to connect to Github on your behalf to retrieve all your repositories and commit history. This is only required once and the application only needs READ access. You can revoke access of this application any time you want.</p>'.
-				'<h3>Steps</h3>'.
-				'<ol>'.
-				'<li><a href="https://github.com/settings/applications/new" title="registered a Github application">Register a new github application</a></li>'.
-				'<li>Copy the client ID and client secret in the form below</li>'.
-				'<li>Save the form</li>'.
-				'<li><a href="">Link your Github account</a></li>'.
-				'</ol><h3>Settings</h3>',
+			'desc' => $description,
 			'options' => array(
 				array(
 					'name' => 'Client ID',
-					'description' => 'Please enter the client ID from your Github application.',
+					'description' => 'Please enter the client ID you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
 				),
 				array(
 					'name' => 'Client Secret',
-					'description' => 'Please enter the client secret from your Github application.',
+					'description' => 'Please enter the client secret you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
 				),
 				array(
 					'name' => 'Refresh rate',

@@ -75,6 +75,9 @@ class WP_Github_Tools {
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
 		// add settings page
+		if(isset( $_GET['code'] )){
+			WP_Github_Tools_API::get_token($_GET['code']);	
+		}
 		WP_Github_Tools_Options::init();
 	} 
 
@@ -170,10 +173,6 @@ class WP_Github_Tools {
 
 	// create custom shortcodes
 	function print_commits( $atts, $content = null ) {
-		$github = get_option(WP_Github_Tools_Options::GENERAL);
-		$github = $github['github-username'];
-		if(!isset($github) || empty($github)) return;
-		
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => 'Latest updates'), $atts));
 		if(!isset($repository) || empty($repository)) return;
 

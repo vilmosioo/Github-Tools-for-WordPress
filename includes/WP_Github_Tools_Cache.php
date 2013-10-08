@@ -14,8 +14,6 @@ class WP_Github_Tools_Cache{
 	* Return the cache, refresh if required
 	*/
 	static function get_cache(){
-		// TODO Temporary 
-		// return array();
 		$cache = self::get_transient(self::ID);
 		if (empty($cache)){
 			$cache = array(
@@ -23,19 +21,21 @@ class WP_Github_Tools_Cache{
 			);
 
 			$options = get_option(WP_Github_Tools_Options::GENERAL);
-			$github = $options['github-username'];
 			$rate = $options['refresh-rate'];
+			$access_token = $options['access-token'];
 
-			if(isset($github) && !empty($github) && WP_Github_Tools_API::can_update()){
-				$cache['gists'] = WP_Github_Tools_API::get_gists($github);
-				$temp = WP_Github_Tools_API::get_repos($github);
+			if(!empty($access_token)){
+				$cache['gists'] = WP_Github_Tools_API::get_gists($access_token);
+				$cache['user'] = WP_Github_Tools_API::get_user($access_token);
+				$temp = WP_Github_Tools_API::get_repos($access_token);
 				if(!is_array($temp)) return;
 				foreach ($temp as $repo) {
 					$cache['repositories'][$repo['name']] = $repo;
 				}
 				foreach($cache['repositories'] as $repo){
 					if(!is_array($repo)) return;
-					$cache['repositories'][$repo['name']]['commits'] = WP_Github_Tools_API::get_commits($repo['name'], $github);
+					$commits = WP_Github_Tools_API::get_commits($cache['user']['login'], $repo['name'], $access_token);
+					$cache['repositories'][$repo['name']]['commits'] = $commits;
 				}
 				self::set_transient(self::ID, $cache, $rate);
 			}
