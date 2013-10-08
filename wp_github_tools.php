@@ -191,8 +191,6 @@ class WP_Github_Tools {
 		}	
 		$s .= '</ul>';
 
-		$s .= "<p><a href='https://github.com/$github/$repository/' title='View on Github'>View on Github</a></p>";
-
 		return $s;
 	}
 

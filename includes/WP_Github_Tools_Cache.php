@@ -18,7 +18,7 @@ class WP_Github_Tools_Cache{
 		$cache = self::get_transient(self::ID);
 		if (empty($cache)){
 			$cache = array(
-				'last_update' => gmdate("Y-m-d\TH:i:s\Z", current_time( 'timestamp' )),
+				'last_update' => gmdate("Y-m-d H:i:s", current_time( 'timestamp' )),
 			);
 
 			$options = get_option(WP_Github_Tools_Options::GENERAL);

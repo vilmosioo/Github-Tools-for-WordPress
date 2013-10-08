@@ -38,9 +38,9 @@ class WP_Github_Tools_Options{
 
 		// determine if client details exist
 		$data = get_option(WP_Github_Tools_Cache::DATA);
-		$description = '<h3>Description</h3>'.
+		$description = '<h2>Description</h2>'.
 			'<p>In order to use this plugin, you must allow it to connect to Github on your behalf to retrieve all your repositories and commit history. This is only required once and the application only needs READ access. You can revoke access of this application any time you want.</p>'.
-			'<h3>Steps</h3>'.
+			'<h2>Steps</h2>'.
 			'<ol>'.
 			'<li><a href="https://github.com/settings/applications/new" title="registered a Github application">Register a new github application</a></li>'.
 			'<li><strong>Make sure the redirect uri is: '.admin_url('tools.php?page='.self::ID).'</strong></li>'.
@@ -75,10 +75,14 @@ class WP_Github_Tools_Options{
 				$url = $cache['user']['html_url'];
 				$avatar_url = $cache['user']['avatar_url'];
 				// TODO Hide entire form if user exists
-				$description = "<img class='wp_github_profile_img' src='$avatar_url' alt='$user'><h1>$user</h1>".
+				$description = "<h2>Summary</h2><img class='wp_github_profile_img' src='$avatar_url' alt='$user'><h1>$user</h1>".
 					"<p>You are connected to Gihub as <a href='$url' title='Github profile'>$login</a>.</p>".
 					"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>";	
-
+				$description .= '<p class="clear">Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
+				$description .= 'User: <strong>'.$cache['user']['name'].' (<a href="'.$cache['user']['html_url'].'" title="'.$cache['user']['name'].'">'.$cache['user']['login'].'</a>)</strong><br>';
+				$description .= 'Saved data: <strong>'.count($cache['repositories']).' repositories</strong> (see cache) and <strong>'.count($cache['gists']).' gists.</strong></p>';
+				$description .= '<p><a class="button" href="">Refresh</a></p>';
+			
 				// remove client-id and client-secret data
 				$general_options = array(
 					array(
@@ -99,7 +103,7 @@ class WP_Github_Tools_Options{
 					'<p><a href="'.$url.'" class="button-primary">Connect to Github</a></p>';
 			} 
 		}
-		$description .= '<h3>Settings</h3>';
+		$description .= '<h2>Settings</h2>';
 		$this->addTab(array(
 			'name' => 'General',
 			'desc' => $description,
@@ -107,15 +111,15 @@ class WP_Github_Tools_Options{
 		));
 
 		// if the user is connected to github and the cache exists, display a cache tab
-		$str = ''; 
 		$cache = WP_Github_Tools_Cache::get_cache();
 		if(is_array($cache)){
-			$str .= '<p><strong>Last updated </strong>'.$cache['last_update'];
-			$str .= '<h2>Repositories</h2>';
-			
+			$str = "<h2>Repositories</h2>";
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
-					$str .= @do_shortcode("[commits repository='$name' count='5' title='$name']");
+					$str .= "<h2>$name</h2>";
+					$str .= "<p>$repository[description]</p>";
+					$str .= @do_shortcode("[commits repository='$name' count='5']");
+					$str .= "<a href='".$repository['html_url']."' title='View on Github'>View on Github</a>";
 				}
 
 				$this->addTab(array(
