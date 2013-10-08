@@ -106,25 +106,25 @@ class WP_Github_Tools_Options{
 			'options' => $general_options
 		));
 
-		// build the cache page
-		
+		// if the user is connected to github and the cache exists, display a cache tab
 		$str = ''; 
 		$cache = WP_Github_Tools_Cache::get_cache();
 		if(is_array($cache)){
 			$str .= '<p><strong>Last updated </strong>'.$cache['last_update'];
 			$str .= '<h2>Repositories</h2>';
 			
-			if(is_array(@$cache['repositories']))
-			foreach (@$cache['repositories'] as $name => $repository) {
-				$str .= @do_shortcode("[commits repository='$name' count='5' title='$name']");
+			if(is_array(@$cache['repositories'])){
+				foreach (@$cache['repositories'] as $name => $repository) {
+					$str .= @do_shortcode("[commits repository='$name' count='5' title='$name']");
+				}
+
+				$this->addTab(array(
+					'name' => 'Cache',
+					'desc' => $str
+				));
 			}
 		}
 		
-		$this->addTab(array(
-			'name' => 'Cache',
-			'desc' => $str
-		));
-
 		// initialise options
 		foreach($this->tabs as $slug => $tab){
 			if(!get_option(self::ID.$slug)){
