@@ -9,6 +9,7 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 class WP_Github_Tools_Cache{
 
 	const ID = 'WP_Github_Tools';
+	const DATA = 'WP_Github_Tools_Data';
 
 	/**
 	* Return the cache, refresh if required
@@ -22,8 +23,9 @@ class WP_Github_Tools_Cache{
 
 			$options = get_option(WP_Github_Tools_Options::GENERAL);
 			$rate = $options['refresh-rate'];
-			$access_token = $options['access-token'];
-
+			$data = get_option(self::DATA);
+			$access_token = $data['access-token'];
+			
 			if(!empty($access_token)){
 				$cache['gists'] = WP_Github_Tools_API::get_gists($access_token);
 				$cache['user'] = WP_Github_Tools_API::get_user($access_token);

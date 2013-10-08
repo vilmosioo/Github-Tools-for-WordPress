@@ -24,8 +24,7 @@ class WP_Github_Tools_API{
 				if(empty($access_token)){
 					die(json_encode($response));
 				} else {
-					$options['access-token'] = $access_token;
-					update_option(WP_Github_Tools_Options::GENERAL, $options);
+					update_option(WP_Github_Tools_Cache::DATA, array('access-token' => $access_token));
 				}
 				
 			}

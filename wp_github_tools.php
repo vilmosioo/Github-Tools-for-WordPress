@@ -67,17 +67,25 @@ class WP_Github_Tools {
 		// Add a settings link in the plugin page
 		add_action('WP_Github_Tools_Activated', array(&$this, 'plugin_activated'));
 		// Add a settings link in the plugin page
-		add_filter('plugin_action_links', array(&$this, 'action_links'), 10, 2);
+		add_filter('plugin_action_links_'.plugin_basename(__FILE__), array(&$this, 'action_links'), 10, 2);
 			// create gist  shortcode [gist id='#']
 		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
 		add_shortcode('commits', array( &$this, 'print_commits' ));
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
-		// add settings page
+		
+		// check to see if the user connected to github
 		if(isset( $_GET['code'] )){
 			WP_Github_Tools_API::get_token($_GET['code']);	
 		}
+
+		// check to see if the user requested to disconnect
+		if(isset($_GET['wp_github_tools_action']) && $_GET['wp_github_tools_action'] == 'disconnect'){
+			$this->clear_all();
+		}
+		
+		// add settings page
 		WP_Github_Tools_Options::init();
 	} 
 
@@ -98,17 +106,13 @@ class WP_Github_Tools {
 	* Check for the existence of a github username and display a notice if there isn't
 	*/
 	public function display_notice(){
-		$github = get_option(WP_Github_Tools_Options::GENERAL);
-		$github = $github['github-username'];
+		$data = get_option(WP_Github_Tools_Cache::DATA);
+		$github = $github['access-token'];
 
 		global $current_user ;
 		$user_id = $current_user->ID;
-
-		// todo delete
-		// delete_user_meta($user_id, 'wp_github_tools_ignore_notice');
 		
 		if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
-
 			// add JavaScript for WP Pointers
 			wp_enqueue_script( 'wp-pointer' );
 			// add CSS for WP Pointers
@@ -148,21 +152,12 @@ class WP_Github_Tools {
 	}
 
 	function action_links($links, $file) {
-		static $this_plugin;
-
-		if (!$this_plugin) {
-			$this_plugin = plugin_basename(__FILE__);
-		}
-
-		if ($file == $this_plugin) {
-			// The "page" query string value must be equal to the slug
-			// of the Settings admin page we defined earlier, which in
-			// this case equals "myplugin-settings".
-			$settings_link = '<a href="' .admin_url('tools.php?page='.WP_Github_Tools_Options::GENERAL).'">Settings</a>';
-			array_unshift($links, $settings_link);
-		}
-
-		return $links;
+		return array_merge(
+			array(
+				'Settings' =>  '<a href="' .admin_url('tools.php?page='.WP_Github_Tools_Options::ID).'">Settings</a>'
+			),
+			$links
+		);	
 	}
 
 	// create custom shortcodes
@@ -206,8 +201,8 @@ class WP_Github_Tools {
 		
 		// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
-		$github = get_option(WP_Github_Tools_Options::GENERAL);
-		$github = $github['github-username'];
+		$data = get_option(WP_Github_Tools_Cache::DATA);
+		$github = $github['access-token'];
 
 		global $current_user ;
 		$user_id = $current_user->ID;
@@ -259,8 +254,7 @@ class WP_Github_Tools {
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
 	function uninstall( $network_wide ) {
-		delete_option(WP_Github_Tools_Options::GENERAL);
-		WP_Github_Tools_Cache::clear_cache();
+		$this->clear_all();
 	} 
 
 	/**
@@ -275,6 +269,12 @@ class WP_Github_Tools {
 	 */	
 	function register_admin_scripts() {
 		wp_enqueue_script( 'vi-github-commits-admin-script', VI_GITHUB_COMMITS_DIR.'js/admin.js');
+	}
+
+	function clear_all(){
+		delete_option(WP_Github_Tools_Options::GENERAL);
+		delete_option(WP_Github_Tools_Cache::DATA);
+		WP_Github_Tools_Cache::clear();
 	}
 
 } // end class

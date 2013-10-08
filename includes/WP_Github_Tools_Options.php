@@ -37,54 +37,73 @@ class WP_Github_Tools_Options{
 		}
 
 		// determine if client details exist
-		$options = get_option(self::GENERAL);
+		$data = get_option(WP_Github_Tools_Cache::DATA);
 		$description = '<h3>Description</h3>'.
 			'<p>In order to use this plugin, you must allow it to connect to Github on your behalf to retrieve all your repositories and commit history. This is only required once and the application only needs READ access. You can revoke access of this application any time you want.</p>'.
 			'<h3>Steps</h3>'.
 			'<ol>'.
 			'<li><a href="https://github.com/settings/applications/new" title="registered a Github application">Register a new github application</a></li>'.
-			'<li><strong>Make sure the redirect uri is: '.urlencode(admin_url('tools.php?page='.self::ID)).'</strong></li>'.
+			'<li><strong>Make sure the redirect uri is: '.admin_url('tools.php?page='.self::ID).'</strong></li>'.
 			'<li>Copy the client ID and client secret in the form below</li>'.
 			'<li>Save the form</li>'.
 			'<li>Once the client data is saved, you can connect this plugin to your Github account.</li>'.
-			'</ol><h3>Settings</h3>';
-		if(is_array($options)){
-			if(!empty($options['access-token'])){
-				$cache = WP_Github_Tools_Cache::get_cache();
-				if(is_array($cache)){
-					$user = $cache['user']['name'];
-					$url = $cache['user']['html_url'];
-					// TODO Add disconnect and check these settings based on cache
-					// TODO Hide entire form if user exists
-					$description = "<h3>You are connected to Gihub as <a href='$url' title='Github profile'>$user</a>!</h3>";	
-				}
-			} else if(!empty($options['client-id']) && !empty($options['client-id'])){
+			'</ol>';
+
+		$general_options = array(
+			array(
+				'name' => 'Client ID',
+				'description' => 'Please enter the client ID you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
+			),
+			array(
+				'name' => 'Client Secret',
+				'description' => 'Please enter the client secret you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
+			),
+			array(
+				'name' => 'Refresh rate',
+				'description' => 'How often to refresh to repositories.',
+				'type' => 'select',
+				'options' => $temp
+			)
+		);
+
+		if(is_array($data) && !empty($data['access-token'])){
+			// user has connected profile to github
+			$cache = WP_Github_Tools_Cache::get_cache();
+			if(is_array($cache)){
+				$user = $cache['user']['name'];
+				$login = $cache['user']['login'];
+				$url = $cache['user']['html_url'];
+				$avatar_url = $cache['user']['avatar_url'];
+				// TODO Hide entire form if user exists
+				$description = "<img class='wp_github_profile_img' src='$avatar_url' alt='$user'><h1>$user</h1>".
+					"<p>You are connected to Gihub as <a href='$url' title='Github profile'>$login</a>.</p>".
+					"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>";	
+
+				// remove client-id and client-secret data
+				$general_options = array(
+					array(
+						'name' => 'Refresh rate',
+						'description' => 'How often to refresh to repositories.',
+						'type' => 'select',
+						'options' => $temp
+					)
+				);
+			}
+		} else {
+			$options = get_option(self::GENERAL);
+			if(!empty($options['client-id']) && !empty($options['client-id'])){
+				// user has saved client app details, ready to connect
 				$client_id = urlencode($options['client-id']);
 				$url = 'https://github.com/login/oauth/authorize?client_id='.$client_id;
 				$description = '<h3>Connect to Github</h3><p>Looks like you\'re ready to link your Github account!</p>'.
 					'<p><a href="'.$url.'" class="button-primary">Connect to Github</a></p>';
 			} 
 		}
-		
+		$description .= '<h3>Settings</h3>';
 		$this->addTab(array(
 			'name' => 'General',
 			'desc' => $description,
-			'options' => array(
-				array(
-					'name' => 'Client ID',
-					'description' => 'Please enter the client ID you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
-				),
-				array(
-					'name' => 'Client Secret',
-					'description' => 'Please enter the client secret you received from GitHub when you <a href="https://github.com/settings/applications/new" title="registered a Github application">registered</a>.',
-				),
-				array(
-					'name' => 'Refresh rate',
-					'description' => 'How often to refresh to repositories.',
-					'type' => 'select',
-					'options' => $temp
-				)
-			)
+			'options' => $general_options
 		));
 
 		// build the cache page
@@ -121,7 +140,7 @@ class WP_Github_Tools_Options{
 		}
 	}
 
-	function settings_saved()
+	function page_loaded()
 	{
 		if(isset($_GET['settings-updated']) && $_GET['settings-updated']){
 			WP_Github_Tools_Cache::clear();
@@ -176,7 +195,7 @@ class WP_Github_Tools_Options{
 		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
 		$page = add_management_page(self::TITLE, self::TITLE, 'administrator', self::ID, array(&$this, 'settings_page_setup'));
 		add_action( "admin_print_scripts-$page", array(&$this, 'settings_styles_and_scripts'));
-		add_action('load-'.$page, array(&$this, 'settings_saved'));
+		add_action('load-'.$page, array(&$this, 'page_loaded'));
 	}
 
 	function settings_styles_and_scripts(){

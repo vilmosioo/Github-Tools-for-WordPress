@@ -40,8 +40,8 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 			array( 'description' => $this->description, 'class' => $this->class ) // Args
 		);
 
-		$github = get_option(WP_Github_Tools_Options::GENERAL);
-		$github = $github['github-username'];
+		$data = get_option(WP_Github_Tools_Cache::DATA);
+		$github = $data['access-token'];
 		if(isset($github) && !empty($github)){
 			$this->github_username = $github;
 			$repositories = WP_Github_Tools_Cache::get_cache();
@@ -78,7 +78,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 		$count = $this->fields['count']['name'];
 		$count = $instance[$count] ? $instance[$count] : 5;
 		if($this->github_username){
-			$s = "<ul class='github-commits github-commits-$repository'>";
+			$s = "<ul class='github-commits github-commits-".$instance[$name]."'>";
 			$repositories = WP_Github_Tools_Cache::get_cache();
 			if(is_array($repositories)){
 				$repositories = $repositories['repositories'];
