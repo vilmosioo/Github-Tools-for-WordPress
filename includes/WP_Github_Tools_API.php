@@ -26,7 +26,6 @@ class WP_Github_Tools_API{
 				} else {
 					update_option(WP_Github_Tools_Cache::DATA, array('access-token' => $access_token));
 				}
-				
 			}
 		}			
 	}

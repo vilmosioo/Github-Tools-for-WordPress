@@ -3,17 +3,18 @@
 .github-tools-image{ vertical-align: middle;  margin:-3px 5px 0 5px; display:none;}
 #github-tools-feedback{ display:none;}
 
-.commits{
+.github-commits{
 	list-style: disc;
 	padding-left: 40px;
 }
 
-.commits li{
+.github-commits li{
 	margin:0 0 5px 0;
 	padding:0;
 }
 
-.wp_github_profile_img{ float:left; margin:0 15px 0 0; }
+.wp_github_summary img{ float:left; margin:0 15px 0 0; }
+.wp_github_summary:after{ content:''; display:block; height:1px; clear:both;}
 
 .clear{ display:block; clear:both;}
 

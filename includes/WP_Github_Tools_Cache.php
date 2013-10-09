@@ -25,7 +25,6 @@ class WP_Github_Tools_Cache{
 			$rate = $options['refresh-rate'];
 			$data = get_option(self::DATA);
 			$access_token = $data['access-token'];
-			
 			if(!empty($access_token)){
 				$cache['gists'] = WP_Github_Tools_API::get_gists($access_token);
 				$cache['user'] = WP_Github_Tools_API::get_user($access_token);

@@ -73,16 +73,17 @@ class WP_Github_Tools_Options{
 				$user = $cache['user']['name'];
 				$login = $cache['user']['login'];
 				$url = $cache['user']['html_url'];
-				$avatar_url = $cache['user']['avatar_url'];
+				$avatar_url = $cache['user']['avatar_url']."&s=100";
 				// TODO Hide entire form if user exists
-				$description = "<h2>Summary</h2><img class='wp_github_profile_img' src='$avatar_url' alt='$user'><h1>$user</h1>".
-					"<p>You are connected to Gihub as <a href='$url' title='Github profile'>$login</a>.</p>".
-					"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>";	
-				$description .= '<p class="clear">Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
-				$description .= 'User: <strong>'.$cache['user']['name'].' (<a href="'.$cache['user']['html_url'].'" title="'.$cache['user']['name'].'">'.$cache['user']['login'].'</a>)</strong><br>';
+				$description = "<h2>Summary</h2>".
+					"<div class='wp_github_summary'>".
+						"<img src='$avatar_url' alt='$user'>".
+						"<h3>$user (<a href='$url' title='Github profile'>$login</a>)</h3>";
+				$description .= '<p>Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
 				$description .= 'Saved data: <strong>'.count($cache['repositories']).' repositories</strong> (see cache) and <strong>'.count($cache['gists']).' gists.</strong></p>';
-				$description .= '<p><a class="button" href="">Refresh</a></p>';
-			
+				$description .=	"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>".
+				"</div>";	
+				
 				// remove client-id and client-secret data
 				$general_options = array(
 					array(
@@ -114,11 +115,14 @@ class WP_Github_Tools_Options{
 		$cache = WP_Github_Tools_Cache::get_cache();
 		if(is_array($cache)){
 			$str = "<h2>Repositories</h2>";
+			$str .= "<p>You can preview the repository data cached by the plugin here. It is updated periodically. If you want to refresh this data now, press the button below.</p>";
+			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh').'">Refresh</a></p>';
+
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
 					$str .= "<p>$repository[description]</p>";
-					$str .= @do_shortcode("[commits repository='$name' count='5']");
+					$str .= do_shortcode("[commits repository='$name' count='5']");
 					$str .= "<a href='".$repository['html_url']."' title='View on Github'>View on Github</a>";
 				}
 
@@ -135,10 +139,8 @@ class WP_Github_Tools_Options{
 				$defaults = array();
 				foreach( $tab['options'] as $option){
 					$name = self::generate_slug($option['name']);
-					
 					$defaults[$name] = '';
 				}
-			
 				update_option( self::ID.$slug, $defaults );
 			}	
 		}
@@ -183,7 +185,8 @@ class WP_Github_Tools_Options{
 		$args['option'] = array_merge ( array(
 			"name" => 'Option name',
 			"description" => "",
-			"type" => 'text'
+			"type" => 'text',
+			"options" => array()
 		), $args['option'] );
 
     $this->tabs[$args['tab']]['options'][self::generate_slug($args['option']['name'])] = array(

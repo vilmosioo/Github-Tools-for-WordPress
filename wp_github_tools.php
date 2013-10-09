@@ -50,7 +50,7 @@ class WP_Github_Tools {
 	private function __construct() {
 		register_activation_hook(__FILE__, array( &$this, 'activate' ) );
 		register_deactivation_hook(__FILE__, array( &$this, 'deactivate' ) );
-		register_uninstall_hook(__FILE__, array( &$this, 'uninstall' ) );
+		register_uninstall_hook(__FILE__, array( 'WP_Github_Tools', 'uninstall' ) );
 
 		// check for github username
 		// Don't run on WP < 3.3
@@ -81,8 +81,12 @@ class WP_Github_Tools {
 		}
 
 		// check to see if the user requested to disconnect
-		if(isset($_GET['wp_github_tools_action']) && $_GET['wp_github_tools_action'] == 'disconnect'){
-			$this->clear_all();
+		if(isset($_GET['wp_github_tools_action'])){
+			if($_GET['wp_github_tools_action'] == 'disconnect'){
+				$this->clear_all();
+			} else if($_GET['wp_github_tools_action'] == 'refresh'){
+				WP_Github_Tools_Cache::clear();
+			}
 		}
 		
 		// add settings page
@@ -107,7 +111,7 @@ class WP_Github_Tools {
 	*/
 	public function display_notice(){
 		$data = get_option(WP_Github_Tools_Cache::DATA);
-		$github = $github['access-token'];
+		$github = $data['access-token'];
 
 		global $current_user ;
 		$user_id = $current_user->ID;
@@ -181,12 +185,13 @@ class WP_Github_Tools {
 		$commits = $repositories[$repository]['commits'];
 		if(!is_array($commits)) return;
 		$commits = array_slice($commits, 0, $count);
-		$commits = array_slice($commits, 0, $count);
 		foreach($commits as $commit){
 			$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
 			$commit = $commit['commit'];
-			$date = date("d M Y", strtotime($commit['committer']['date']));
+			$committer = $commit['committer'];
+			$date = date("d M Y", strtotime($committer['date']));
 			$msg = $commit['message'];
+			
 			$s .= "<li class='commit'><span class='date'>$date</span> <a href='$url' title='$msg'>$msg</a></li>";
 		}	
 		$s .= '</ul>';
@@ -252,7 +257,7 @@ class WP_Github_Tools {
 	 *
 	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
 	 */
-	function uninstall( $network_wide ) {
+	static function uninstall( $network_wide ) {
 		$this->clear_all();
 	} 
 
