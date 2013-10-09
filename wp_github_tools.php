@@ -39,7 +39,7 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
 class WP_Github_Tools {
 	 
 	static function init(){
-		new WP_Github_Tools();
+		return new WP_Github_Tools();
 	}
 
 	const ID = 'WP_Github_Tools';
@@ -251,26 +251,11 @@ class WP_Github_Tools {
 		do_action('WP_Github_Tools_Deactivated');
 	} 
 
-	/**
-	 * Registers and enqueues admin-specific styles.
-	 */
-	function register_admin_styles() {
-		wp_enqueue_style( 'vi-github-commits-admin-styles', VI_GITHUB_COMMITS_DIR.'css/admin.css');
-	} 
-
-	/**
-	 * Registers and enqueues admin-specific JavaScript.
-	 */	
-	function register_admin_scripts() {
-		wp_enqueue_script( 'vi-github-commits-admin-script', VI_GITHUB_COMMITS_DIR.'js/admin.js');
-	}
-
 	function clear_all(){
 		delete_option(WP_Github_Tools_Options::GENERAL);
 		delete_option(WP_Github_Tools_Cache::DATA);
 		WP_Github_Tools_Cache::clear();
 	}
-
 } // end class
 
 $GLOBALS['Github Tools'] = WP_Github_Tools::init();
