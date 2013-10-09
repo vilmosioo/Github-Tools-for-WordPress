@@ -50,7 +50,6 @@ class WP_Github_Tools {
 	private function __construct() {
 		register_activation_hook(__FILE__, array( &$this, 'activate' ) );
 		register_deactivation_hook(__FILE__, array( &$this, 'deactivate' ) );
-		register_uninstall_hook(__FILE__, array( 'WP_Github_Tools', 'uninstall' ) );
 
 		// check for github username
 		// Don't run on WP < 3.3
@@ -250,15 +249,6 @@ class WP_Github_Tools {
 	 */
 	function deactivate( $network_wide ) {
 		do_action('WP_Github_Tools_Deactivated');
-	} 
-	
-	/**
-	 * Fired when the plugin is uninstalled.
-	 *
-	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
-	 */
-	static function uninstall( $network_wide ) {
-		$this->clear_all();
 	} 
 
 	/**

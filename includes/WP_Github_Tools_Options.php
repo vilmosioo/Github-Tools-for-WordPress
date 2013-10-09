@@ -60,7 +60,7 @@ class WP_Github_Tools_Options{
 			),
 			array(
 				'name' => 'Refresh rate',
-				'description' => 'How often to refresh to repositories.',
+				'description' => 'How often to refresh to repositories. (This will refresh all stored data).',
 				'type' => 'select',
 				'options' => $temp
 			)
@@ -88,7 +88,7 @@ class WP_Github_Tools_Options{
 				$general_options = array(
 					array(
 						'name' => 'Refresh rate',
-						'description' => 'How often to refresh to repositories.',
+						'description' => 'How often to refresh to repositories. (This will refresh all stored data).',
 						'type' => 'select',
 						'options' => $temp
 					)
