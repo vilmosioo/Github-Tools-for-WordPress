@@ -2,7 +2,7 @@
 /*
 * Github API helper class
 * 
-* Uses the github api to retrieve public gists, repos or commits for a specific user
+* Uses the github API v3 to retrieve public gists, repos or commits for a specific user
 */
 class WP_Github_Tools_API{
 
@@ -14,9 +14,9 @@ class WP_Github_Tools_API{
 			$args = array(
 				'body' => array('client_id' => $client_id, 'client_secret' => $client_secret, 'code' => $code),
 				'sslverify' => false
-	    );
+			);
 			$response = wp_remote_post('https://github.com/login/oauth/access_token', $args);
-	    if(is_wp_error($response) || $response['response']['code'] != 200) {
+			if(is_wp_error($response) || $response['response']['code'] != 200) {
 				return false;
 			} else {
 				parse_str($response['body']);
@@ -35,6 +35,9 @@ class WP_Github_Tools_API{
 
 		$base = "https://api.github.com/";
 		$response = wp_remote_get($base . $url. '?access_token='.$access_token, array( 'sslverify' => false ));
+		if(is_wp_error($response) || $response['response']['code'] != 200) {
+			return array();
+		}
 		$response = json_decode($response['body'], true);
 		return $response;
 	}

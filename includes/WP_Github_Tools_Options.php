@@ -80,7 +80,7 @@ class WP_Github_Tools_Options{
 						"<img src='$avatar_url' alt='$user'>".
 						"<h3>$user (<a href='$url' title='Github profile'>$login</a>)</h3>";
 				$description .= '<p>Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
-				$description .= 'Saved data: <strong>'.count($cache['repositories']).' repositories</strong> (see cache) and <strong>'.count($cache['gists']).' gists.</strong></p>';
+				$description .= 'Saved data: <strong>'.$cache['user']['public_repos'].' repositories</strong> (see cache) and <strong>'.$cache['user']['public_gists'].' gists.</strong></p>';
 				$description .=	"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>".
 				"</div>";	
 				
@@ -116,14 +116,15 @@ class WP_Github_Tools_Options{
 		if(is_array($cache)){
 			$str = "<h2>Repositories</h2>";
 			$str .= "<p>You can preview the repository data cached by the plugin here. It is updated periodically. If you want to refresh this data now, press the button below.</p>";
-			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh').'">Refresh</a></p>';
+			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh&tab=cache').'">Refresh</a></p>';
 
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
 					$str .= "<p>$repository[description]</p>";
-					$str .= do_shortcode("[commits repository='$name' count='5']");
-					$str .= "<a href='".$repository['html_url']."' title='View on Github'>View on Github</a>";
+					$str .= "<h3>Usage example:</h3><p>[commits repository='$name' count='5' title='Commits']</p><div class='code-preview'>";
+					$str .= do_shortcode("[commits repository='$name' count='5' title='Commits']");
+					$str .= "</div>";
 				}
 
 				$this->addTab(array(

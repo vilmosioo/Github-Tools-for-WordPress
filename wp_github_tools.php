@@ -192,7 +192,7 @@ class WP_Github_Tools {
 		if(!is_array($commits)) return;
 		$commits = array_slice($commits, 0, $count);
 		foreach($commits as $commit){
-			$url = "https://github.com/$github/$repository/commit/".$commit['sha'];
+			$url = $commit['html_url'];
 			$commit = $commit['commit'];
 			$committer = $commit['committer'];
 			$date = date("d M Y", strtotime($committer['date']));

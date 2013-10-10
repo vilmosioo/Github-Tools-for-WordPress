@@ -19,3 +19,6 @@
 .clear{ display:block; clear:both;}
 
 .wp_github_tright{ text-align: right;}
+
+.code-preview{ padding:1em 10px; background: #fcfcfc;}
+.code-preview h3{ margin:0;}
