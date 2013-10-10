@@ -81,8 +81,9 @@ class WP_Github_Tools {
 			}
 		}
 
-		// check to see if the user requested to disconnect
-		if(isset($_GET['wp_github_tools_action'])){
+		// check to see if the user requested to disconnect or refresh
+		// do NOT perform any action when request is a form response
+		if(isset($_GET['wp_github_tools_action']) && !isset($_GET['settings-updated'])){
 			if($_GET['wp_github_tools_action'] == 'disconnect'){
 				$this->clear_all();
 			} else if($_GET['wp_github_tools_action'] == 'refresh'){
