@@ -18,11 +18,11 @@ class WP_Github_Tools_API{
 			$response = wp_remote_post('https://github.com/login/oauth/access_token', $args);
 	    if(is_wp_error($response) || $response['response']['code'] != 200) {
 				// todo handle error
-				die('Error'.json_encode($response));
+				wp_die('<h2>Something went terribly wrong</h2><p>We could not connect you to Github at this time. Please try again.</p><p>If it helps, the error message is below.</p><p>'.json_encode($response).'</p>');
 			} else {
 				parse_str($response['body']);
 				if(empty($access_token)){
-					die(json_encode($response));
+					wp_die('<h2>Something went terribly wrong</h2><p>We could not find the access token in the response. Please try again.</p><p>If it helps, the error message is below.</p><p>'.json_encode($response).'</p>');
 				} else {
 					update_option(WP_Github_Tools_Cache::DATA, array('access-token' => $access_token));
 				}
