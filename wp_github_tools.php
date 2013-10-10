@@ -3,7 +3,7 @@
 Plugin Name: WP GitHub Tools
 Plugin URI: http://vilmosioo.co.uk/github-tools-for-wordpress
 Description: A plugin that creates live updates for any GitHub repository. 
-Version: 1.0
+Version: 1.1
 Author: Vilmos Ioo
 Author URI: http://vilmosioo.co.uk
 Author Email: ioo.vilmos@gmail.com
