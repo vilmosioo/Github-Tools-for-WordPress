@@ -76,7 +76,9 @@ class WP_Github_Tools {
 		
 		// check to see if the user connected to github
 		if(isset( $_GET['code'] )){
-			WP_Github_Tools_API::get_token($_GET['code']);	
+			if(!WP_Github_Tools_API::get_token($_GET['code'])){
+				add_action('admin_notices', array(&$this, 'display_errors') );
+			}
 		}
 
 		// check to see if the user requested to disconnect
@@ -91,6 +93,10 @@ class WP_Github_Tools {
 		// add settings page
 		WP_Github_Tools_Options::init();
 	} 
+
+	public function display_errors(){
+		echo "<div class='error'><p><strong>Oops! Something went terribly wrong!</strong></p><p>We could not connect you to Github at this time. Please try again.</p></div>";		
+	}
 
 	/**
 	* Handle the user dismiss action
