@@ -77,7 +77,7 @@ class WP_Github_Tools_Options{
 				// TODO Hide entire form if user exists
 				$description = "<h2>Summary</h2>".
 					"<div class='wp_github_summary'>".
-						"<img src='$avatar_url' alt='$user'>".
+						"<a href='$url' title='$user' class='thumbnail'><img src='$avatar_url' alt='$user'></a>".
 						"<h3>$user (<a href='$url' title='Github profile'>$login</a>)</h3>";
 				$description .= '<p>Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
 				$description .= 'Saved data: <strong>'.$cache['user']['public_repos'].' repositories</strong> (see cache) and <strong>'.$cache['user']['public_gists'].' gists.</strong></p>';
@@ -100,7 +100,7 @@ class WP_Github_Tools_Options{
 				// user has saved client app details, ready to connect
 				$client_id = urlencode($options['client-id']);
 				$url = 'https://github.com/login/oauth/authorize?client_id='.$client_id;
-				$description = '<h3>Connect to Github</h3><p>Looks like you\'re ready to link your Github account!</p>'.
+				$description = '<h2>Connect to Github</h2><p>Looks like you\'re ready to link your Github account!</p>'.
 					'<p><a href="'.$url.'" class="button-primary">Connect to Github</a></p>';
 			} 
 		}
