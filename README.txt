@@ -75,7 +75,7 @@ Send any questions directly to [me](http://twitter.com/vilmosioo)!
 
 == Changelog ==
 
-= 1.0 =
+= 1.1 =
 * 	Using OAuth to connect to Github
 * 	Improved settings page
 *		Better caching system 
