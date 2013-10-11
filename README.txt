@@ -2,8 +2,8 @@
 Contributors: vilmosioo
 Tags: github, tool, widget, repository, commit, gist
 Requires at least: 3.4.2
-Tested up to: 3.5.1
-Stable tag: trunk
+Tested up to: 3.6
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4K8F8YQMP84CJ
@@ -65,15 +65,17 @@ If you have suggestions for a new add-on, feel free to contact me on [Twitter](h
 4. The cache preview system. You can manually refresh the cached data and you can view examples for the commits shortcode.  
 
 == Upgrade Notice ==
-*   Version 1.1 brings OAuth, improved styling and better cache.
-*   Version 1.0 published!
+= 1.1 =
+Version 1.1 brings OAuth, improved styling and better cache.
+= 1.0 =
+Version 1.0 published!
 
 == Frequently Asked Questions ==
 Send any questions directly to [me](http://twitter.com/vilmosioo)!
 
 == Changelog ==
 
-= 1.0 =
+= 1.1 =
 * 	Using OAuth to connect to Github
 * 	Improved settings page
 *		Better caching system 
