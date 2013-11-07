@@ -211,7 +211,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'title' => ''), $atts));
+		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '', 'background' => ''), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3'){
@@ -227,7 +227,13 @@ class WP_Github_Tools {
 		$s .= "<div class='github-chart'><svg></div>";
 
 		// Set JS data for the chart
-		$data = array();
+		$data = array(
+			'data' => array(),
+			'width' => $width,
+			'height' => $height,
+			'color' => $color,
+			'background' => $background
+		);
 		$temp = array();
 		$repositories = WP_Github_Tools_Cache::get_cache();
 		if(!isset($repositories) || !is_array($repositories)) return;
@@ -235,7 +241,7 @@ class WP_Github_Tools {
 		if(!is_array($repositories)) return;
 		$commits = $repositories[$repository]['commits'];
 		if(!is_array($commits)) return;
-		
+
 		// add number of commits for each day in a temporary array
 		$min = null;
 		$max = null; 
@@ -262,7 +268,7 @@ class WP_Github_Tools {
 
 		// generate the JS data
 		foreach ($temp as $key => $value) {
-			array_push($data, array(
+			array_push($data['data'], array(
 				'date' => date("d M Y", $key),
 				'value' => $value
 			));
