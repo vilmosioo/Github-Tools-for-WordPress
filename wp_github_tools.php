@@ -37,7 +37,7 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
 
 class WP_Github_Tools {
-	 
+	
 	static function init(){
 		return new WP_Github_Tools();
 	}
@@ -63,6 +63,8 @@ class WP_Github_Tools {
 			add_action('wp_ajax_dismiss_wp_github_tools', array( $this, 'handle_notice_dismiss' ) );
 		}
 
+		// register chart scripts
+		add_action('wp_enqueue_scripts', array(&$this, 'add_chart_scripts'));
 		// Add a settings link in the plugin page
 		add_action('WP_Github_Tools_Activated', array(&$this, 'plugin_activated'));
 		// Add a settings link in the plugin page
@@ -181,6 +183,13 @@ class WP_Github_Tools {
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => ''), $atts));
 		if(!isset($repository) || empty($repository)) return;
 
+		if (VI_VERSION > '3.3'){
+			wp_enqueue_script('WP_Github_Tools_D3');
+			wp_enqueue_script('WP_Github_Tools_NVD3');
+			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
+			wp_enqueue_script('WP_Github_Tools_Chart');
+		}
+
 		$s = "<ul class='github-commits github-commits-$repository'>";
 		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
 		$repositories = WP_Github_Tools_Cache::get_cache();
@@ -203,6 +212,20 @@ class WP_Github_Tools {
 		$s .= '</ul>';
 
 		return $s;
+	}
+
+	function add_chart_scripts(){
+		wp_register_script('WP_Github_Tools_D3', '//d3js.org/d3.v3.min.js', array(), '1.0', true);
+		wp_register_script('WP_Github_Tools_NVD3', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.min.js', array('WP_Github_Tools_D3'), '1.0', true);
+		wp_register_style('WP_Github_Tools_NVD3_Style', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.css');
+		wp_register_script('WP_Github_Tools_Chart', plugins_url('js/script.js', __FILE__), array('WP_Github_Tools_NVD3'), '1.0', true);
+		// we cannot enqueue scripts in shortcode for older WP
+		if (VI_VERSION <= '3.3'){
+			wp_enqueue_script('WP_Github_Tools_D3');
+			wp_enqueue_script('WP_Github_Tools_NVD3');
+			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
+			wp_enqueue_script('WP_Github_Tools_Chart');	
+		}		
 	}
 
 	function register_widgets(){
