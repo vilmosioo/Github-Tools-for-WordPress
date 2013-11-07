@@ -73,6 +73,8 @@ class WP_Github_Tools {
 		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
 		add_shortcode('commits', array( &$this, 'print_commits' ));
+		// create chart shortcode
+		add_shortcode('chart', array( &$this, 'display_chart' ));
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
 		
@@ -183,13 +185,6 @@ class WP_Github_Tools {
 		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => ''), $atts));
 		if(!isset($repository) || empty($repository)) return;
 
-		if (VI_VERSION > '3.3'){
-			wp_enqueue_script('WP_Github_Tools_D3');
-			wp_enqueue_script('WP_Github_Tools_NVD3');
-			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
-			wp_enqueue_script('WP_Github_Tools_Chart');
-		}
-
 		$s = "<ul class='github-commits github-commits-$repository'>";
 		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
 		$repositories = WP_Github_Tools_Cache::get_cache();
@@ -214,17 +209,83 @@ class WP_Github_Tools {
 		return $s;
 	}
 
+	// display activity chart for a repository
+	function display_chart($atts, $content = null){
+		extract(shortcode_atts(array('repository' => '', 'title' => ''), $atts));
+		if(!isset($repository) || empty($repository)) return;
+		
+		if (VI_VERSION > '3.3'){
+			wp_enqueue_script('WP_Github_Tools_D3');
+			wp_enqueue_script('WP_Github_Tools_NVD3');
+			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
+			wp_enqueue_script('WP_Github_Tools_Chart');
+			wp_enqueue_style('WP_Github_Tools_Chart_Style');	
+		}
+		
+		$s = "";
+		$s .= !empty($title) ? "<h3>$title</h3>" : "";
+		$s .= "<div class='github-chart'><svg></div>";
+
+		// Set JS data for the chart
+		$data = array();
+		$temp = array();
+		$repositories = WP_Github_Tools_Cache::get_cache();
+		if(!isset($repositories) || !is_array($repositories)) return;
+		$repositories = $repositories['repositories'];
+		if(!is_array($repositories)) return;
+		$commits = $repositories[$repository]['commits'];
+		if(!is_array($commits)) return;
+		
+		// add number of commits for each day in a temporary array
+		$min = null;
+		$max = null; 
+		foreach($commits as $commit){
+			$commit = $commit['commit'];
+			$committer = $commit['committer'];
+			$date = strtotime(date("d M Y", strtotime($committer['date'])));
+			$date += ((1 - date('w', $date)) * 24 * 3600);
+			$temp[$date] = empty($temp[$date]) ? 1 : $temp[$date] + 1;
+			// maintain min and max dates
+			if(empty($min)) $min = $date;
+			if(empty($max)) $max = $date;
+			$min = $date < $min ? $date : $min;
+			$max = $date > $max ? $date : $max;
+		}
+
+		// add days that have no commits
+		for($i = $min; $i < $max; $i += 3600*24*7){
+			if(empty($temp[$i])){
+				$temp[$i] = 0;
+			}
+		}	
+		ksort($temp);
+
+		// generate the JS data
+		foreach ($temp as $key => $value) {
+			array_push($data, array(
+				'date' => date("d M Y", $key),
+				'value' => $value
+			));
+		}
+
+    wp_localize_script( 'WP_Github_Tools_Chart', 'CHART_DATA', $data );
+
+		return $s;
+	}
+
 	function add_chart_scripts(){
 		wp_register_script('WP_Github_Tools_D3', '//d3js.org/d3.v3.min.js', array(), '1.0', true);
 		wp_register_script('WP_Github_Tools_NVD3', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.min.js', array('WP_Github_Tools_D3'), '1.0', true);
 		wp_register_style('WP_Github_Tools_NVD3_Style', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.css');
-		wp_register_script('WP_Github_Tools_Chart', plugins_url('js/script.js', __FILE__), array('WP_Github_Tools_NVD3'), '1.0', true);
+		wp_register_script('WP_Github_Tools_Chart', plugins_url('js/chart.js', __FILE__), array('WP_Github_Tools_NVD3'), '1.0', true);
+		wp_register_style('WP_Github_Tools_Chart_Style', plugins_url('css/chart.css', __FILE__), 'WP_Github_Tools_NVD3_Style');
 		// we cannot enqueue scripts in shortcode for older WP
 		if (VI_VERSION <= '3.3'){
 			wp_enqueue_script('WP_Github_Tools_D3');
 			wp_enqueue_script('WP_Github_Tools_NVD3');
 			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
-			wp_enqueue_script('WP_Github_Tools_Chart');	
+			wp_enqueue_script('WP_Github_Tools_Chart');
+			wp_enqueue_style('WP_Github_Tools_Chart_Style');	
 		}		
 	}
 
