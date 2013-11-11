@@ -231,8 +231,8 @@ class WP_Github_Tools {
 			'data' => array(),
 			'width' => $width,
 			'height' => $height,
-			'color' => $color,
-			'background' => $background
+			'background' => $background,
+			'color' => $color
 		);
 		$temp = array();
 		$repositories = WP_Github_Tools_Cache::get_cache();

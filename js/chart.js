@@ -15,13 +15,15 @@ var CHART = (function (chart, $) {
 			.transitionDuration(250)
 			.tooltipContent(function(k, d, e) {
 				return '<p>' + d3.format('d')(e) + '</p>';
+			})
+			.color(function(d){
+				return CHART_DATA.color;
 			});
 	};
 
 	var _apply_styles = function(){
-		var d3_chart = d3.select('.github-chart svg'),
-			d3_rect = d3.selectAll('.github-chart rect');
-		console.log(d3_rect);
+		var d3_chart = d3.select('.github-chart svg');
+
 		if($.isNumeric(CHART_DATA.width) && CHART_DATA.width > 0){
 			d3_chart.style('width', CHART_DATA.width);
 		}
@@ -30,20 +32,24 @@ var CHART = (function (chart, $) {
 		}
 
 		d3_chart.style('background', CHART_DATA.background);
-		d3_rect.style({
-			'fill': CHART_DATA.color,
-			'stroke': CHART_DATA.color
-		});
+	};
+
+	var _format_axis = function(chart){
+		chart.xAxis
+			.tickFormat(function(d) {
+				return d3.time.format('%e/%m')(new Date(d));
+			});
 	};
 
 	chart.init = function(){
 		nv.addGraph(function() {  
 			var chart = _create_chart();
 			
-			chart.xAxis
-				.tickFormat(function(d) {
-					return d3.time.format('%e/%m')(new Date(d));
-				});
+			// format the axises
+			_format_axis(chart);
+
+			// apply any styles to the chart
+			_apply_styles();
 
 			d3.select('.github-chart svg').datum([ 
 				{
@@ -52,8 +58,6 @@ var CHART = (function (chart, $) {
 				}
 			])
 			.call(chart);
-
-			_apply_styles();
 
 			nv.utils.windowResize(chart.update);
 		});
