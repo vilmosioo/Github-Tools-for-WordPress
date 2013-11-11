@@ -51,7 +51,7 @@ class WP_Github_Tools_API{
 	}
 
 	static function get_commits($user, $repo, $access_token){
-		return self::get_data("repos/$user/$repo/commits", $access_token);
+		return self::get_data("repos/$user/$repo/commits?per_page=100", $access_token);
 	}
 
 	static function get_gists($access_token){

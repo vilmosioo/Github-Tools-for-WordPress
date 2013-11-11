@@ -211,7 +211,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '', 'background' => ''), $atts));
+		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '#f17f49', 'background' => '', 'count' => -1), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3'){
@@ -245,6 +245,9 @@ class WP_Github_Tools {
 		// add number of commits for each day in a temporary array
 		$min = null;
 		$max = null; 
+
+		// work only with the specified number of commits
+		$commits = $count != -1 ? array_slice($commits, 0, $count) : $commits;
 		foreach($commits as $commit){
 			$commit = $commit['commit'];
 			$committer = $commit['committer'];
@@ -257,6 +260,8 @@ class WP_Github_Tools {
 			$min = $date < $min ? $date : $min;
 			$max = $date > $max ? $date : $max;
 		}
+
+		$data['count'] = count($commits);
 
 		// add days that have no commits
 		for($i = $min; $i < $max; $i += 3600*24*7){
