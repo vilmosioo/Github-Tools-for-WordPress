@@ -31,6 +31,13 @@ class WP_Github_Tools_Options{
 		add_action('admin_menu', array(&$this, 'start'));
 		add_action( 'admin_init', array(&$this, 'register_mysettings') );
 		
+		wp_register_script('WP_Github_Tools_D3', '//d3js.org/d3.v3.min.js', array(), '1.0', true);
+		wp_register_script('WP_Github_Tools_NVD3', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.min.js', array('WP_Github_Tools_D3'), '1.0', true);
+		wp_register_style('WP_Github_Tools_NVD3_Style', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.css');
+		wp_register_script('WP_Github_Tools_Chart', plugins_url('../js/chart.js', __FILE__), array('WP_Github_Tools_NVD3'), '1.0', true);
+		wp_register_style('WP_Github_Tools_Chart_Style', plugins_url('../css/chart.css', __FILE__), 'WP_Github_Tools_NVD3_Style');
+		
+
 		$temp = array();
 		foreach (wp_get_schedules() as $key => $value) {
 			$temp[$value['display']] = $value['interval'];
@@ -118,6 +125,7 @@ class WP_Github_Tools_Options{
 			$str .= "<p>You can preview the repository data cached by the plugin here. It is updated periodically. If you want to refresh this data now, press the button below.</p>";
 			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh&tab=cache').'">Refresh</a></p>';
 
+			$first_repo = true;
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
@@ -125,6 +133,12 @@ class WP_Github_Tools_Options{
 					$str .= "<h3>Usage example:</h3><p>[commits repository='$name' count='5' title='Commits']</p><div class='code-preview'>";
 					$str .= do_shortcode("[commits repository='$name' count='5' title='Commits']");
 					$str .= "</div>";
+					if($first_repo){
+						$str .= "[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']</p><div class='code-preview'>";
+						$str .= do_shortcode("[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']");
+						$str .= "</div>";
+						$first_repo = false;
+					}
 				}
 
 				$this->addTab(array(
@@ -209,6 +223,13 @@ class WP_Github_Tools_Options{
 	function settings_styles_and_scripts(){
 		wp_enqueue_script('github-tools-settings-page-script', VI_GITHUB_COMMITS_URL. 'js/admin.js');
 		wp_enqueue_style('github-tools-settings-page-style', VI_GITHUB_COMMITS_URL. 'css/admin.css');
+		if($this->current == 'cache'){
+			wp_enqueue_script('WP_Github_Tools_D3');
+			wp_enqueue_script('WP_Github_Tools_NVD3');
+			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
+			wp_enqueue_script('WP_Github_Tools_Chart');
+			wp_enqueue_style('WP_Github_Tools_Chart_Style');
+		}
 	}
 
 	function settings_page_setup() {
