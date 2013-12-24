@@ -183,10 +183,10 @@ class WP_Github_Tools {
 
 	// create custom shortcodes
 	function print_commits( $atts, $content = null ) {
-		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => ''), $atts));
+		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => '', 'class' => ''), $atts));
 		if(!isset($repository) || empty($repository)) return;
 
-		$s = "<ul class='github-commits github-commits-$repository'>";
+		$s = "<ul class='github-commits github-commits-$repository $class'>";
 		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
 		$repositories = WP_Github_Tools_Cache::get_cache();
 		$github = $repositories['user']['login'];
@@ -212,7 +212,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'height' => '300', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
+		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'class' => '', 'height' => '300', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3'){
@@ -225,7 +225,7 @@ class WP_Github_Tools {
 		
 		$s = "";
 		$s .= !empty($title) ? "<h3>$title</h3>" : "";
-		$s .= "<div class='github-chart'><svg id='$id'></div>";
+		$s .= "<div class='github-chart $class'><svg id='$id'></div>";
 
 		// Set JS data for the chart
 		$data = array(
