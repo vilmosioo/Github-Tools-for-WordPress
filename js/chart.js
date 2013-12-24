@@ -10,19 +10,16 @@ var CHART = (function (chart, $) {
 			.x(function(d) { return d.date })
 			.y(function(d) { return d.value })
 			.staggerLabels(false)
-			.tooltips(true)
-			.showValues(false)
+			.tooltips(false)
+			.showValues(true)
 			.transitionDuration(250)
-			.tooltipContent(function(k, d, e) {
-				return '<p>' + d3.format('d')(e) + '</p>';
-			})
 			.color(function(d){
 				return CHART_DATA.color;
 			});
 	};
 
 	var _apply_styles = function(){
-		var d3_chart = d3.select('.github-chart svg');
+		var d3_chart = d3.selectAll('.github-chart svg');
 
 		if($.isNumeric(CHART_DATA.width) && CHART_DATA.width > 0){
 			d3_chart.style('width', CHART_DATA.width);
@@ -51,7 +48,7 @@ var CHART = (function (chart, $) {
 			// apply any styles to the chart
 			_apply_styles();
 
-			d3.select('.github-chart svg').datum([ 
+			d3.selectAll('.github-chart svg').datum([ 
 				{
 					key: "Github Repository",
 					values: CHART_DATA.data

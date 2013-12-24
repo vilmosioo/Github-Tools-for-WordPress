@@ -211,7 +211,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '#f17f49', 'background' => '', 'count' => -1), $atts));
+		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3'){
@@ -247,7 +247,7 @@ class WP_Github_Tools {
 		$max = null; 
 
 		// work only with the specified number of commits
-		$commits = $count != -1 ? array_slice($commits, 0, $count) : $commits;
+		$commits = is_numeric($count) && $count > 0 ? array_slice($commits, 0, $count) : array_slice($commits, 0, 30);
 		foreach($commits as $commit){
 			$commit = $commit['commit'];
 			$committer = $commit['committer'];
