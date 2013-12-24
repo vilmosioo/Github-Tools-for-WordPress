@@ -3,9 +3,9 @@
 * Github chart handler.
 * Requires nvd3 library.
 */
-var CHART = (function (chart, $) {
+var CHART = (function (chart, $, window) {
 
-	var _create_chart = function(){
+	var _create_chart = function(CHART_DATA){
 		return nv.models.discreteBarChart()
 			.x(function(d) { return d.date })
 			.y(function(d) { return d.value })
@@ -18,9 +18,7 @@ var CHART = (function (chart, $) {
 			});
 	};
 
-	var _apply_styles = function(){
-		var d3_chart = d3.selectAll('.github-chart svg');
-
+	var _apply_styles = function(d3_chart, CHART_DATA){
 		if($.isNumeric(CHART_DATA.width) && CHART_DATA.width > 0){
 			d3_chart.style('width', CHART_DATA.width);
 		}
@@ -40,28 +38,32 @@ var CHART = (function (chart, $) {
 
 	chart.init = function(){
 		nv.addGraph(function() {  
-			var chart = _create_chart();
+			d3.selectAll('.github-chart svg').each(function(d, index){
+				var chart = d3.select(this);
+				var data = window[chart.attr('id')];
+				var nvchart = _create_chart(data);
 			
-			// format the axises
-			_format_axis(chart);
+				// format the axises
+				_format_axis(nvchart);
 
-			// apply any styles to the chart
-			_apply_styles();
+				// apply any styles to the chart
+				_apply_styles(chart, data);
 
-			d3.selectAll('.github-chart svg').datum([ 
-				{
-					key: "Github Repository",
-					values: CHART_DATA.data
-				}
-			])
-			.call(chart);
+				chart.datum([ 
+					{
+						key: "Github Repository",
+						values: data.data
+					}
+				])
+				.call(nvchart);
 
-			nv.utils.windowResize(chart.update);
+				nv.utils.windowResize(nvchart.update);
+			});
 		});
-	};
+	}
 
 	return chart;
-}(CHART || {}, jQuery));
+}(CHART || {}, jQuery, window));
 
 jQuery(document).ready(CHART.init);
 

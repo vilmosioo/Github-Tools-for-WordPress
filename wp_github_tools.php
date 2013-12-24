@@ -43,6 +43,7 @@ class WP_Github_Tools {
 	}
 
 	const ID = 'WP_Github_Tools';
+	static $INDEX = 0;
 
 	/**
 	 * Initializes the plugin by setting localization, filters, and administration functions.
@@ -211,7 +212,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'title' => '', 'width' => '', 'height' => '', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
+		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'height' => '300', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3'){
@@ -224,7 +225,7 @@ class WP_Github_Tools {
 		
 		$s = "";
 		$s .= !empty($title) ? "<h3>$title</h3>" : "";
-		$s .= "<div class='github-chart'><svg></div>";
+		$s .= "<div class='github-chart'><svg id='$id'></div>";
 
 		// Set JS data for the chart
 		$data = array(
@@ -279,7 +280,7 @@ class WP_Github_Tools {
 			));
 		}
 
-    wp_localize_script( 'WP_Github_Tools_Chart', 'CHART_DATA', $data );
+    wp_localize_script( 'WP_Github_Tools_Chart', $id, $data );
 
 		return $s;
 	}
