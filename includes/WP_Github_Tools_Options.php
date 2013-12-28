@@ -125,7 +125,9 @@ class WP_Github_Tools_Options{
 			$str .= "<p>You can preview the repository data cached by the plugin here. It is updated periodically. If you want to refresh this data now, press the button below.</p>";
 			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh&tab=cache').'">Refresh</a></p>';
 
-			$first_repo = true;
+			$charts_str = "<h2>NVD3 charts</h2>";
+			$charts_str .= "<p>You can preview charts of you repositories' commit activity. These charts are created using NVD3 chart library, which is based on D3.</p>";
+			
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
@@ -133,17 +135,21 @@ class WP_Github_Tools_Options{
 					$str .= "<h3>Usage example:</h3><p>[commits repository='$name' count='5' title='Commits']</p><div class='code-preview'>";
 					$str .= do_shortcode("[commits repository='$name' count='5' title='Commits']");
 					$str .= "</div>";
-					if($first_repo){
-						$str .= "[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']</p><div class='code-preview'>";
-						$str .= do_shortcode("[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']");
-						$str .= "</div>";
-						$first_repo = false;
-					}
+			
+					$charts_str .= "<h2>$name</h2>";
+					$charts_str .= "<p>$repository[description]</p>";
+					$charts_str .= "[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']</p><div class='code-preview'>";
+					$charts_str .= do_shortcode("[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']");
+					$charts_str .= "</div>";
 				}
 
 				$this->addTab(array(
 					'name' => 'Cache',
 					'desc' => $str
+				));
+				$this->addTab(array(
+					'name' => 'Charts (beta)',
+					'desc' => $charts_str
 				));
 			}
 		}
@@ -223,7 +229,7 @@ class WP_Github_Tools_Options{
 	function settings_styles_and_scripts(){
 		wp_enqueue_script('github-tools-settings-page-script', VI_GITHUB_COMMITS_URL. 'js/admin.js');
 		wp_enqueue_style('github-tools-settings-page-style', VI_GITHUB_COMMITS_URL. 'css/admin.css');
-		if($this->current == 'cache'){
+		if($this->current == 'charts-(beta)'){
 			wp_enqueue_script('WP_Github_Tools_D3');
 			wp_enqueue_script('WP_Github_Tools_NVD3');
 			wp_enqueue_style('WP_Github_Tools_NVD3_Style');

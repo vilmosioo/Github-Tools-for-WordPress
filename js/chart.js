@@ -18,7 +18,7 @@ var CHART = (function (chart, $, window) {
 				return CHART_DATA.color;
 			})
 			.tooltipContent(function(key, x, y, e, graph){
-				return '<h3>'+y+' commits</h3>';
+				return parseInt(y, 10) !== 1 ? '<h3>'+y+' commits</h3>' : '<h3>'+y+' commit</h3>';
 			});
 	};
 
@@ -40,7 +40,8 @@ var CHART = (function (chart, $, window) {
 			});
 	  chart.yAxis
 	  	.tickFormat(d3.format('d'))
-	  	.axisLabel("Number of commits").axisLabelDistance(55);
+	  	.axisLabel("Number of commits")
+	  	.axisLabelDistance(55);
 	};
 
 	chart.init = function(){

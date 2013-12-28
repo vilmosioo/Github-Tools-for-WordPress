@@ -215,7 +215,7 @@ class WP_Github_Tools {
 		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'class' => '', 'height' => '300', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
-		if (VI_VERSION > '3.3'){
+		if (VI_VERSION > '3.3' && !is_admin()){
 			wp_enqueue_script('WP_Github_Tools_D3');
 			wp_enqueue_script('WP_Github_Tools_NVD3');
 			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
