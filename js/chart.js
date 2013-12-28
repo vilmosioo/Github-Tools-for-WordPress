@@ -10,16 +10,20 @@ var CHART = (function (chart, $, window) {
 			.x(function(d) { return d.date })
 			.y(function(d) { return d.value })
 			.staggerLabels(false)
-			.tooltips(false)
-			.showValues(true)
+			.tooltips(true)
+			.showValues(false)
 			.transitionDuration(250)
+			.margin({top: 15, right: 10, bottom: 20, left: 40})
 			.color(function(d){
 				return CHART_DATA.color;
+			})
+			.tooltipContent(function(key, x, y, e, graph){
+				return '<h3>'+y+' commits</h3>';
 			});
 	};
 
 	var _apply_styles = function(d3_chart, CHART_DATA){
-		if($.isNumeric(CHART_DATA.width) && CHART_DATA.width > 0){
+			if($.isNumeric(CHART_DATA.width) && CHART_DATA.width > 0){
 			d3_chart.style('width', CHART_DATA.width);
 		}
 		if($.isNumeric(CHART_DATA.height) && CHART_DATA.height > 0){
@@ -32,8 +36,11 @@ var CHART = (function (chart, $, window) {
 	var _format_axis = function(chart){
 		chart.xAxis
 			.tickFormat(function(d) {
-				return d3.time.format('%e/%m')(new Date(d));
+				return d3.time.format('%e %b')(new Date(d));
 			});
+	  chart.yAxis
+	  	.tickFormat(d3.format('d'))
+	  	.axisLabel("Number of commits").axisLabelDistance(55);
 	};
 
 	chart.init = function(){

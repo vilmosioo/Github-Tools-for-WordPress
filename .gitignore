@@ -1,4 +1,5 @@
 wp-github-tools/
+sftp-config.json
 
 # Numerous always-ignore extensions
 *.diff
