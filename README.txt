@@ -1,9 +1,9 @@
 === WP GitHub Tools ===
 Contributors: vilmosioo
 Tags: github, tool, widget, repository, commit, gist
-Requires at least: 3.4.2
-Tested up to: 3.6
-Stable tag: 1.1
+Requires at least: 3.3
+Tested up to: 3.8
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4K8F8YQMP84CJ
@@ -30,6 +30,19 @@ Displays the latest commits from your repository. Parameters:
 
 - *repository* (required) The name of the repository you wish to get. 
 - *count* (optional) The number of commits to retrieve (order by date). Default: 5
+- *title* (optional) A title to display before the list (*h2*). Default: none
+
+**[chart repository='your-repository' width='chart-width' height='chart-height' class='additional-css-classes' color='bar-color' background='chart-background' count='commit-count' title='your-title']** 
+
+Displays an activity chart for the given repository. Parameters:
+
+- *repository* (required) The name of the repository you wish to get. 
+- *width* (optional) The width of the chart. Default: auto
+- *height* (optional) The height of the chart. Default: auto
+- *class* (optional) Additional CSS classes to add to the chart element. Default: ''
+- *color* (optional) The chart bar colors. Must be a valid color string (rgb, hex or name). Default: '#f17f49'
+- *background* (optional) The chart background color. Must be a valid color string (rgb, hex or name). Default: 'transparent'
+- *count* (optional) The number of commits to retrieve (order by date). Default: 30
 - *title* (optional) A title to display before the list (*h2*). Default: none
 
 = PHP functions =
@@ -63,8 +76,11 @@ If you have suggestions for a new add-on, feel free to contact me on [Twitter](h
 2. The settings page once you are connected to Github.
 3. The commits widget that you can use on any sidebar to deliver live updates for your projects.
 4. The cache preview system. You can manually refresh the cached data and you can view examples for the commits shortcode.  
+5. The chart preview system. Currently in beta. 
 
 == Upgrade Notice ==
+= 1.2 =
+Version 1.2 allows you to display customizable charts of your github commit activity.
 = 1.1 =
 Version 1.1 brings OAuth, improved styling and better cache.
 = 1.0 =
@@ -74,6 +90,9 @@ Version 1.0 published!
 Send any questions directly to [me](http://twitter.com/vilmosioo)!
 
 == Changelog ==
+
+= 1.2 =
+* 	Added Chart functionality (beta) that allows users to display their commit activity using a graph.
 
 = 1.1 =
 * 	Using OAuth to connect to Github
