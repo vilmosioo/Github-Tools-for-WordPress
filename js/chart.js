@@ -13,7 +13,7 @@ var CHART = (function (chart, $, window) {
 			.tooltips(true)
 			.showValues(false)
 			.transitionDuration(250)
-			.margin({top: 15, right: 10, bottom: 20, left: 40})
+			.margin({top: 15, right: 10, bottom: 20, left: 20})
 			.color(function(d){
 				return CHART_DATA.color;
 			})
@@ -39,9 +39,7 @@ var CHART = (function (chart, $, window) {
 				return d3.time.format('%e %b')(new Date(d));
 			});
 	  chart.yAxis
-	  	.tickFormat(d3.format('d'))
-	  	.axisLabel("Number of commits")
-	  	.axisLabelDistance(55);
+	  	.tickFormat(d3.format('d'));
 	};
 
 	chart.init = function(){

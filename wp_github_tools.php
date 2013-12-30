@@ -212,7 +212,7 @@ class WP_Github_Tools {
 
 	// display activity chart for a repository
 	function display_chart($atts, $content = null){
-		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'class' => '', 'height' => '300', 'color' => '#f17f49', 'background' => '#fff', 'count' => 30), $atts));
+		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'class' => '', 'height' => '300', 'color' => '#f17f49', 'background' => 'transparent', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
 		
 		if (VI_VERSION > '3.3' && !is_admin()){

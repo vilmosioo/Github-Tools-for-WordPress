@@ -126,7 +126,7 @@ class WP_Github_Tools_Options{
 			$str .= '<p><a class="button" href="'.admin_url('tools.php?page='.self::ID.'&wp_github_tools_action=refresh&tab=cache').'">Refresh</a></p>';
 
 			$charts_str = "<h2>NVD3 charts</h2>";
-			$charts_str .= "<p>You can preview charts of you repositories' commit activity. These charts are created using NVD3 chart library, which is based on D3.</p>";
+			$charts_str .= "<p>You can preview charts of you repositories' commit activity. These charts are created using <a href='http://nvd3.org/'>NVD3</a> chart library, which is based on <a href='http://d3js.org/'>D3</a>.</p>";
 			
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
@@ -138,8 +138,8 @@ class WP_Github_Tools_Options{
 			
 					$charts_str .= "<h2>$name</h2>";
 					$charts_str .= "<p>$repository[description]</p>";
-					$charts_str .= "[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']</p><div class='code-preview'>";
-					$charts_str .= do_shortcode("[chart repository='$name' height='300' color='#f17f49' background='#fff' count='30' title='Activity']");
+					$charts_str .= "[chart repository='$name' class='admin-github-chart' height='200' color='#f17f49' count='30' title='Activity']</p><div class='code-preview'>";
+					$charts_str .= do_shortcode("[chart repository='$name' class='admin-github-chart' height='200' color='#f17f49' count='30' title='Activity']");
 					$charts_str .= "</div>";
 				}
 
