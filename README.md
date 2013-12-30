@@ -58,6 +58,28 @@ Or follow updates on [Twitter](http://twitter.com/vilmosioo)!
  5. Connect to Github
  6. Ready to go!
 
+### Screenshots
+
+Commits shortcode in action. An un-onrdered list of the latest commits is displayed, that you can style as you please using CSS.
+
+![](screenshot-1.png) 
+
+The settings page once you are connected to Github.
+
+![](screenshot-2.png) 
+
+The commits widget that you can use on any sidebar to deliver live updates for your projects.
+
+![](screenshot-3.png) 
+
+The cache preview system. You can manually refresh the cached data and you can view examples for the commits shortcode. 
+
+![](screenshot-4.PNG) 
+
+The chart preview system. Currently in beta. 
+
+![](screenshot-5.png) 
+
 ### Changelog
 	
 *1.2 30 December 2013*
