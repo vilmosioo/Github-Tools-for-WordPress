@@ -1,5 +1,4 @@
-wp-github-tools/
-sftp-config.json
+node_modules/
 
 # Numerous always-ignore extensions
 *.diff
