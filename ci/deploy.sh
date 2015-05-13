@@ -3,8 +3,8 @@
 git checkout master
 git pull origin master
 git checkout svnsync
-git svn rebase
+svn update
 git merge --no-ff master
 git commit
-git svn dcommit
+svn dcommit
 git checkout master
