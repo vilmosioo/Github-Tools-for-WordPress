@@ -1,0 +1,16 @@
+{
+  "name": "Github-Tools-for-WordPress",
+  "version": "0.0.1",
+  "description": "A plugin that inserts dynamic updates for your GitHub repositories.",
+  "main": "wp_github_tools.php",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vilmosioo/Github-Tools-for-WordPress.git"
+  },
+  "author": "",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/vilmosioo/Github-Tools-for-WordPress/issues"
+  },
+  "homepage": "https://github.com/vilmosioo/Github-Tools-for-WordPress"
+}
