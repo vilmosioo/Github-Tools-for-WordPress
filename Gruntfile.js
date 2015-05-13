@@ -30,6 +30,22 @@ module.exports = function (grunt) {
 					}
 				]
 			}
+		},
+		bump: {
+			options: {
+				files: ['package.json', 'bower.json'],
+				updateConfigs: ['pck'],
+				commit: true,
+				commitMessage: 'Release v%VERSION% [skip ci]',
+				commitFiles: ['-a'],
+				createTag: true,
+				tagName: 'v%VERSION%',
+				tagMessage: 'Version %VERSION%',
+				push: true,
+				pushTo: 'origin',
+				gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+				globalReplace: false
+			}
 		}
 	});
 
