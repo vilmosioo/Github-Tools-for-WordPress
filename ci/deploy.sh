@@ -1,5 +1,7 @@
 # Updates svn branch with lastest
 
+git svn -h
+git fetch
 git checkout master
 git pull origin master
 git checkout svnsync
