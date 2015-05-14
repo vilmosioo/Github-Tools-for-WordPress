@@ -8,5 +8,5 @@ git checkout svnsync
 svn update
 git merge --no-ff master
 git commit
-svn dcommit
+svn commit
 git checkout master
