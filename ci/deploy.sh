@@ -5,7 +5,7 @@ set -e
 git fetch
 git checkout master
 git pull origin master
-git checkout -b svnsync origin/svnsync
+git checkout svnsync
 svn update
 git merge --no-ff master
 git commit
