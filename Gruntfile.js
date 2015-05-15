@@ -4,6 +4,7 @@ module.exports = function (grunt) {
 
 	// Load grunt tasks
 	grunt.loadNpmTasks('grunt-replace');
+	grunt.loadNpmTasks('grunt-bump');
 
 	// Define the configuration for all the tasks
 	grunt.initConfig({
@@ -34,7 +35,7 @@ module.exports = function (grunt) {
 		bump: {
 			options: {
 				files: ['package.json', 'bower.json'],
-				updateConfigs: ['pck'],
+				updateConfigs: ['pkg'],
 				commit: true,
 				commitMessage: 'Release v%VERSION% [skip ci]',
 				commitFiles: ['-a'],
