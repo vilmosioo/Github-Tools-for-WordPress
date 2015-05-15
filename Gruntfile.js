@@ -6,7 +6,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-replace');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-bump');
+	grunt.loadNpmTasks('grunt-svn-checkout');
 
 	// Define the configuration for all the tasks
 	grunt.initConfig({
@@ -16,7 +18,20 @@ module.exports = function (grunt) {
 				src: 'dist'
 			}
 		},
+		svn_checkout: {
+			dist: {
+				repos: [
+					{
+						path: ['dist'],
+	          			repo: 'http://plugins.svn.wordpress.org/wp-github-tools/'
+					}
+				]
+			}
+		},
 		copy: {
+			options:{
+				mode: true
+			},
 			dist: {
 				files: [
 					{
@@ -30,7 +45,7 @@ module.exports = function (grunt) {
 							'!.gitignore',
 							'!.gitmodules'
 						],
-						dest: 'dist'
+						dest: 'dist/wp-github-tools/trunk'
 					}
 				]
 			}
@@ -55,6 +70,13 @@ module.exports = function (grunt) {
 				]
 			}
 		},
+		mkdir: {
+			dist:{
+				options:{
+					create: ['dist']
+				}
+			}
+		},
 		bump: {
 			options: {
 				files: ['package.json'],
@@ -73,7 +95,15 @@ module.exports = function (grunt) {
 		}
 	});
 
+	grunt.registerTask('release', [
+		'clean',
+		'mkdir',
+		'svn_checkout',
+		'copy'
+	]);
+
 	grunt.registerTask('default', [
-		'replace'
+		'build',
+		'release'
 	]);
 };
