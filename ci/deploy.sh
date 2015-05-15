@@ -13,9 +13,9 @@ git stash pop
 git add . # add the modified files from the build process
 git commit -m "Updated version references"
 #svn commit
-#git push origin svnsync
+git push origin svnsync
 
 echo 'Publishing master'
 git checkout master
-#git push origin master
-#git push origin master --tags
+git push origin master
+git push origin master --tags
