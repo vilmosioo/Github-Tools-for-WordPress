@@ -9,6 +9,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-bump');
 	grunt.loadNpmTasks('grunt-svn-checkout');
+	grunt.loadNpmTasks('grunt-push-svn');
 
 	// Define the configuration for all the tasks
 	grunt.initConfig({
@@ -23,16 +24,28 @@ module.exports = function (grunt) {
 				repos: [
 					{
 						path: ['dist'],
-	          			repo: 'http://plugins.svn.wordpress.org/wp-github-tools/'
+						repo: 'http://plugins.svn.wordpress.org/wp-github-tools/'
 					}
 				]
+			},
+		},
+		push_svn: {
+			options: {
+				remove: true,
+				username: 'vilmosioo',
+				password: process.env.WP_PASS
+			},
+			main: {
+				src: 'dist/wp-github-tools',
+				dest: 'http://plugins.svn.wordpress.org/wp-github-tools/',
+				tmp: 'dist/.tmp'
 			}
 		},
 		copy: {
 			options:{
 				mode: true
 			},
-			dist: {
+			trunk: {
 				files: [
 					{
 						expand: true,
@@ -46,6 +59,23 @@ module.exports = function (grunt) {
 							'!.gitmodules'
 						],
 						dest: 'dist/wp-github-tools/trunk'
+					}
+				]
+			},
+			tag: {
+				files: [
+					{
+						expand: true,
+						cwd: '.',
+						src: [
+							'**/*',
+							'!{node_modules,dist,.git,ci}/**',
+							'!Gruntfile.js',
+							'!package.json',
+							'!.gitignore',
+							'!.gitmodules'
+						],
+						dest: 'dist/wp-github-tools/tags/<%= pkg.version %>'
 					}
 				]
 			}
@@ -99,7 +129,8 @@ module.exports = function (grunt) {
 		'clean',
 		'mkdir',
 		'svn_checkout',
-		'copy'
+		'copy',
+		'push_svn'
 	]);
 
 	grunt.registerTask('default', [
