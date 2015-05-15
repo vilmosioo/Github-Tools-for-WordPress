@@ -8,7 +8,7 @@ git fetch
 git stash
 git checkout svnsync
 svn update
-git merge --no-ff master
+git merge --no-ff --no-edit master
 git stash pop
 git add . # add the modified files from the build process
 git commit
