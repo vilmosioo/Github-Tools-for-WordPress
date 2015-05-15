@@ -133,8 +133,5 @@ module.exports = function (grunt) {
 		'push_svn'
 	]);
 
-	grunt.registerTask('default', [
-		'build',
-		'release'
-	]);
+	grunt.registerTask('default', []);
 };
