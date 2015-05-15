@@ -2,15 +2,18 @@
 
 set -e
 
+echo 'Publishing svnsync'
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" # this is necessary to allow the repo to fetch other remote branches
 git fetch
-git checkout master
-git pull origin master
 git checkout svnsync
 svn update
 git merge --no-ff master
+git add . # add the modified files from the build process
 git commit
 svn commit
 git push origin svnsync
+
+echo 'Publishing master'
 git checkout master
 git push origin master
 git push origin master --tags
