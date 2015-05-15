@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 echo 'Switching to master and setting identity for git'
 git checkout master
 git config user.name $GIT_NAME
