@@ -91,10 +91,11 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						dot: true,
-						cwd: 'dist',
-						dest: 'dist',
+						cwd: 'dist/wp-github-tools',
+						dest: 'dist/wp-github-tools',
 						src: [
-							'**/*'
+							'trunk/**/*',
+							'tags/<%= pkg.version %>/**/*'
 						]
 					}
 				]
@@ -130,6 +131,7 @@ module.exports = function (grunt) {
 		'mkdir',
 		'svn_checkout',
 		'copy',
+		'replace',
 		'push_svn'
 	]);
 
