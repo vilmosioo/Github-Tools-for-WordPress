@@ -10,6 +10,10 @@ git config credential.helper "store --file=.git/credentials"
 git config remote.origin.url https://github.com/vilmosioo/Github-Tools-for-WordPress.git
 echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
 
+echo 'Editing svn config'
+echo '[global]' > /home/travis/.subversion/servers
+echo 'store-plaintext-passwords=no' > /home/travis/.subversion/servers
+
 echo 'Patching version...'
 grunt bump-only:patch
 
