@@ -14,7 +14,7 @@ echo 'Patching version...'
 grunt bump-only:patch
 
 echo 'Running build command'
-grunt -v || { echo 'Client build failed' ; exit 1; }
+grunt || { echo 'Client build failed' ; exit 1; }
 
 echo 'Pushing git data to repo...'
 grunt bump-commit
