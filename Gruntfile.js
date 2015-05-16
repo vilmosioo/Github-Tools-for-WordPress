@@ -49,7 +49,8 @@ module.exports = function (grunt) {
 			options: {
 				remove: true,
 				username: 'vilmosioo',
-				password: process.env.WP_PASS
+				password: process.env.WP_PASS,
+				message: 'Release v<%= pkg.version %>'
 			},
 			main: {
 				src: 'dist/wp-github-tools',
