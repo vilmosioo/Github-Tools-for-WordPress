@@ -2,7 +2,7 @@
 Contributors: vilmosioo
 Tags: github, tool, widget, repository, commit, gist
 Requires at least: 3.3
-Tested up to: 3.8
+Tested up to: 4.2.2
 Stable tag: @@version
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
