@@ -16,7 +16,7 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('./package.json'),
 		clean: {
 			dist: {
-				src: 'dist'
+				src: ['dist', 'build']
 			}
 		},
 		svn_checkout: {
@@ -45,7 +45,7 @@ module.exports = function (grunt) {
 			options:{
 				mode: true
 			},
-			trunk: {
+			build: {
 				files: [
 					{
 						expand: true,
@@ -57,6 +57,18 @@ module.exports = function (grunt) {
 							'!package.json',
 							'!.gitignore',
 							'!.gitmodules'
+						],
+						dest: 'build'
+					}
+				]
+			},
+			trunk: {
+				files: [
+					{
+						expand: true,
+						cwd: 'build',
+						src: [
+							'**/*',
 						],
 						dest: 'dist/wp-github-tools/trunk'
 					}
@@ -66,14 +78,9 @@ module.exports = function (grunt) {
 				files: [
 					{
 						expand: true,
-						cwd: '.',
+						cwd: 'build',
 						src: [
-							'**/*',
-							'!{node_modules,dist,.git,ci}/**',
-							'!Gruntfile.js',
-							'!package.json',
-							'!.gitignore',
-							'!.gitmodules'
+							'**/*'
 						],
 						dest: 'dist/wp-github-tools/tags/<%= pkg.version %>'
 					}
@@ -81,7 +88,7 @@ module.exports = function (grunt) {
 			}
 		},
 		replace: {
-			dist: {
+			build: {
 				options: {
 					variables: {
 						'version' : '<%= pkg.version %>'
@@ -91,11 +98,10 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						dot: true,
-						cwd: 'dist/wp-github-tools',
-						dest: 'dist/wp-github-tools',
+						cwd: 'build',
+						dest: 'build',
 						src: [
-							'trunk/**/*',
-							'tags/<%= pkg.version %>/**/*'
+							'**/*'
 						]
 					}
 				]
@@ -126,14 +132,20 @@ module.exports = function (grunt) {
 		}
 	});
 
-	grunt.registerTask('release', [
+	grunt.registerTask('build', [
 		'clean',
+		'copy:build',
+		'replace'
+	]);
+
+	grunt.registerTask('release', [
+		'build',
 		'mkdir',
 		'svn_checkout',
-		'copy',
-		'replace',
+		'copy:trunk',
+		'copy:tag',
 		'push_svn'
 	]);
 
-	grunt.registerTask('default', []);
+	grunt.registerTask('default', ['build']);
 };
