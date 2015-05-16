@@ -1,6 +1,7 @@
 node_modules/
 dist/
 build/
+wp-github-tools.zip
 
 # Numerous always-ignore extensions
 *.diff

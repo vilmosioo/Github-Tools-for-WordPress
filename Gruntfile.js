@@ -156,7 +156,6 @@ module.exports = function (grunt) {
 	]);
 
 	grunt.registerTask('release', [
-		'build',
 		'mkdir',
 		'svn_checkout',
 		'copy:trunk',
