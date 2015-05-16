@@ -21,6 +21,7 @@
     "grunt": "^0.4.5",
     "grunt-bump": "^0.3.1",
     "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-compress": "^0.13.0",
     "grunt-contrib-copy": "^0.8.0",
     "grunt-mkdir": "^0.1.2",
     "grunt-push-svn": "^0.2.1",

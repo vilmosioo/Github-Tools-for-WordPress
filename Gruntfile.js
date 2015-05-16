@@ -10,6 +10,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-bump');
 	grunt.loadNpmTasks('grunt-svn-checkout');
 	grunt.loadNpmTasks('grunt-push-svn');
+	grunt.loadNpmTasks('grunt-contrib-compress');
 
 	// Define the configuration for all the tasks
 	grunt.initConfig({
@@ -17,6 +18,21 @@ module.exports = function (grunt) {
 		clean: {
 			dist: {
 				src: ['dist', 'build']
+			}
+		},
+		compress: {
+			build: {
+				options: {
+					archive: 'wp-github-tools.zip'
+				},
+				files: [
+					{
+						expand: true,
+						cwd: 'build/',
+						src: ['**/*'],
+						dest: '.'
+					}
+				]
 			}
 		},
 		svn_checkout: {
@@ -135,7 +151,8 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', [
 		'clean',
 		'copy:build',
-		'replace'
+		'replace',
+		'compress'
 	]);
 
 	grunt.registerTask('release', [
