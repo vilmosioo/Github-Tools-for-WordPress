@@ -72,7 +72,8 @@ module.exports = function (grunt) {
 							'!Gruntfile.js',
 							'!package.json',
 							'!.gitignore',
-							'!.gitmodules'
+							'!.gitmodules',
+							'!.gitattributes'
 						],
 						dest: 'build'
 					}
@@ -117,7 +118,7 @@ module.exports = function (grunt) {
 						cwd: 'build',
 						dest: 'build',
 						src: [
-							'**/*'
+							'**/*.{txt,md,js,css,php}'
 						]
 					}
 				]
