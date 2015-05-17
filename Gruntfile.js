@@ -32,6 +32,21 @@ module.exports = function (grunt) {
 				]
 			}
 		},
+		cssmin: {
+			dist: {
+				files: [
+					{
+						expand: true,
+						cwd: '.',
+						src: [
+							'**/*.css',
+							'!{node_modules,build,dist,.git,ci}/**'
+						],
+						dest: 'build'
+					}
+				]
+			}
+		},
 		compress: {
 			build: {
 				options: {
@@ -80,7 +95,7 @@ module.exports = function (grunt) {
 						expand: true,
 						cwd: '.',
 						src: [
-							'**/*.{css,php,txt,md}',
+							'**/*.{php,txt,md}',
 							'!{node_modules,build,dist,.git,ci}/**'
 						],
 						dest: 'build'
@@ -161,6 +176,7 @@ module.exports = function (grunt) {
 		'clean',
 		'copy:build',
 		'uglify',
+		'cssmin',
 		'replace',
 		'compress'
 	]);
