@@ -22,12 +22,12 @@ module.exports = function (grunt) {
 				files: [
 					{
 						expand: true,
-						cwd: '.',
+						cwd: 'js',
 						src: [
 							'**/*.js',
 							'!{node_modules,build,dist,.git,ci}/**'
 						],
-						dest: 'build'
+						dest: 'build/js'
 					}
 				]
 			}
@@ -37,12 +37,12 @@ module.exports = function (grunt) {
 				files: [
 					{
 						expand: true,
-						cwd: '.',
+						cwd: 'css',
 						src: [
 							'**/*.css',
 							'!{node_modules,build,dist,.git,ci}/**'
 						],
-						dest: 'build'
+						dest: 'build/css'
 					}
 				]
 			}
