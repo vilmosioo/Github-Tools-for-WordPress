@@ -1,6 +1,6 @@
 {
   "name": "Github-Tools-for-WordPress",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A plugin that inserts dynamic updates for your GitHub repositories.",
   "main": "wp_github_tools.php",
   "scripts": {
