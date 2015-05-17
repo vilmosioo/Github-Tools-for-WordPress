@@ -94,6 +94,7 @@ Send any questions directly to [me](http://twitter.com/vilmosioo)!
 = 1.2.x =
 * 	Added Chart functionality (beta) that allows users to display their commit activity using a graph.
 *   Enabled automatic build to deliver updates more quickly.
+*   Minifying assets for greater performance.
 
 = 1.1 =
 * 	Using OAuth to connect to Github

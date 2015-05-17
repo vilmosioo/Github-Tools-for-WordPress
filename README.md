@@ -84,6 +84,8 @@ The chart preview system. Currently in beta.
 	
 *1.2 30 December 2013*
  * Added Chart functionality (beta) that allows users to display their commit activity using a graph.
+ * Enabled automatic build to deliver updates more quickly.
+ * Minifying assets for greater performance.
 
 *1.1 10 October 2013*
  * Using OAuth to connect to Github
