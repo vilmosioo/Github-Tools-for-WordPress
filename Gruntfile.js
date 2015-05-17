@@ -3,14 +3,7 @@
 module.exports = function (grunt) {
 
 	// Load grunt tasks
-	grunt.loadNpmTasks('grunt-replace');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-mkdir');
-	grunt.loadNpmTasks('grunt-bump');
-	grunt.loadNpmTasks('grunt-svn-checkout');
-	grunt.loadNpmTasks('grunt-push-svn');
-	grunt.loadNpmTasks('grunt-contrib-compress');
+	require('load-grunt-tasks')(grunt);
 
 	// Define the configuration for all the tasks
 	grunt.initConfig({
@@ -18,6 +11,25 @@ module.exports = function (grunt) {
 		clean: {
 			dist: {
 				src: ['dist', 'build']
+			}
+		},
+		uglify: {
+			options: {
+				banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+					'<%= grunt.template.today("yyyy-mm-dd") %> */'
+			},
+			dist: {
+				files: [
+					{
+						expand: true,
+						cwd: '.',
+						src: [
+							'**/*.js',
+							'!{node_modules,build,dist,.git,ci}/**'
+						],
+						dest: 'build'
+					}
+				]
 			}
 		},
 		compress: {
@@ -68,13 +80,8 @@ module.exports = function (grunt) {
 						expand: true,
 						cwd: '.',
 						src: [
-							'**/*',
-							'!{node_modules,dist,.git,ci}/**',
-							'!Gruntfile.js',
-							'!package.json',
-							'!.gitignore',
-							'!.gitmodules',
-							'!.gitattributes'
+							'**/*.{css,php,txt,md}',
+							'!{node_modules,build,dist,.git,ci}/**'
 						],
 						dest: 'build'
 					}
@@ -153,6 +160,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', [
 		'clean',
 		'copy:build',
+		'uglify',
 		'replace',
 		'compress'
 	]);
