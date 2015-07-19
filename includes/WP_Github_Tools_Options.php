@@ -227,7 +227,6 @@ class WP_Github_Tools_Options{
 	}
 
 	function settings_styles_and_scripts(){
-		wp_enqueue_script('github-tools-settings-page-script', VI_GITHUB_COMMITS_URL. 'js/admin.js');
 		wp_enqueue_style('github-tools-settings-page-style', VI_GITHUB_COMMITS_URL. 'css/admin.css');
 		if($this->current == 'charts-(beta)'){
 			wp_enqueue_script('WP_Github_Tools_D3');
