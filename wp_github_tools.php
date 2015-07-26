@@ -32,6 +32,7 @@ define('VI_GITHUB_COMMITS_URL', plugin_dir_url(__FILE__));
 define('VI_VERSION', get_bloginfo( 'version' ));
 
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Commits_Widget.php');
+require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Releases_Widget.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
@@ -333,6 +334,7 @@ class WP_Github_Tools {
 
 	function register_widgets(){
 		register_widget( 'WP_Github_Tools_Commits_Widget' ); 
+		register_widget( 'WP_Github_Tools_Releases_Widget' ); 
 	}
 		
 		// Displays a welcome message to prompt the user to enter a github username

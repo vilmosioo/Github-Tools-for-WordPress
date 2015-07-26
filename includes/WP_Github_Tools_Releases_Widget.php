@@ -5,16 +5,16 @@
 * Creates a Widget to be added in the sidebar. This class is a template, if you wish to customize it, add more fields and change the title (among other things)
 * 
 */
-class WP_Github_Tools_Commits_Widget extends WP_Widget{
+class WP_Github_Tools_Releases_Widget extends WP_Widget{
 	private $slug, $title, $description, $class;
 	private $fields;
 	private $github_username;
 
 	function __construct($args = array()) {
 		$args = array_merge ( array(
-			"slug" => 'wp_github_tools_widget',
-			"title" => 'GitHub Commits',
-			"description" => 'Use this widget to displays a list of the latest commits from your GitHub repository.',
+			"slug" => 'wp_github_tools_releases_widget',
+			"title" => 'GitHub Releases',
+			"description" => 'Use this widget to displays a list of the latest releases from your GitHub repository.',
 			"class" => 'wp_github_tools_widget'
 			), $args );
 		
@@ -79,7 +79,7 @@ class WP_Github_Tools_Commits_Widget extends WP_Widget{
 		$count = $this->fields['count']['name'];
 		$count = $instance[$count] ? $instance[$count] : 5;
 		if($this->github_username){
-			echo @do_shortcode("[commits repository='$name' count='$count']");
+			echo @do_shortcode("[releases repository='$name' count='$count']");
 		}
 		echo $after_widget;
 	}
