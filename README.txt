@@ -32,6 +32,14 @@ Displays the latest commits from your repository. Parameters:
 - *count* (optional) The number of commits to retrieve (order by date). Default: 5
 - *title* (optional) A title to display before the list (*h2*). Default: none
 
+**[releases repository='your-repository' count='max-count' title='your-title']** 
+
+Displays the latest releases from your repository. Parameters:
+
+- *repository* (required) The name of the repository you wish to get. 
+- *count* (optional) The number of releases to retrieve (order by date). Default: 5
+- *title* (optional) A title to display before the list (*h2*). Default: none
+
 **[chart repository='your-repository' width='chart-width' height='chart-height' class='additional-css-classes' color='bar-color' background='chart-background' count='commit-count' title='your-title']** 
 
 Displays an activity chart for the given repository. Parameters:
@@ -54,6 +62,8 @@ Feel free to use the Gihub helper class in your theme or plugin development.
 `<?php WP_Github_Tools_API::get_user($user, $access_token); ?>`
 
 `<?php WP_Github_Tools_API::get_commits($repo, $user, $access_token); ?>`
+
+`<?php WP_Github_Tools_API::get_releases($repo, $user, $access_token); ?>`
 
 `<?php WP_Github_Tools_API::get_gists($user, $access_token); ?>`
 
@@ -79,6 +89,8 @@ If you have suggestions for a new add-on, feel free to contact me on [Twitter](h
 5. The chart preview system. Currently in beta. 
 
 == Upgrade Notice ==
+= 1.3 =
+Version 1.3 allows you to display a repository's releases.
 = 1.2 =
 Version 1.2 allows you to display customizable charts of your github commit activity.
 = 1.1 =
@@ -91,7 +103,11 @@ Send any questions directly to [me](http://twitter.com/vilmosioo)!
 
 == Changelog ==
 
-= 1.2.x =
+= 1.3 =
+*	Added custom widget to display repository releases.
+*	Implemented custom shortcode to display repository releases.
+
+= 1.2 =
 * 	Added Chart functionality (beta) that allows users to display their commit activity using a graph.
 *   Enabled automatic build to deliver updates more quickly.
 *   Minifying assets for greater performance.

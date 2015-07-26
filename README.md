@@ -82,6 +82,10 @@ The chart preview system. Currently in beta.
 
 ### Changelog
 	
+*1.3 26 July 2015*
+ * Added custom widget to display repository releases.
+ * Implemented custom shortcode to display repository releases.
+ 
 *1.2 30 December 2013*
  * Added Chart functionality (beta) that allows users to display their commit activity using a graph.
  * Enabled automatic build to deliver updates more quickly.
