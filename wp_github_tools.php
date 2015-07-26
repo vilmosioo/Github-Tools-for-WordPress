@@ -74,6 +74,8 @@ class WP_Github_Tools {
 		add_shortcode('gist', array( &$this, 'print_gist' ));
 		// create commits shortcode
 		add_shortcode('commits', array( &$this, 'print_commits' ));
+		// create releases shortcode
+		add_shortcode('releases', array( &$this, 'print_releases' ));
 		// create chart shortcode
 		add_shortcode('chart', array( &$this, 'display_chart' ));
 		// create commits widget
@@ -204,6 +206,34 @@ class WP_Github_Tools {
 			$msg = $commit['message'];
 			
 			$s .= "<li class='commit'><span class='date'>$date</span> <a href='$url' title='$msg'>$msg</a></li>";
+		}	
+		$s .= '</ul>';
+
+		return $s;
+	}
+
+	// create custom shortcodes
+	function print_releases( $atts, $content = null ) {
+		extract(shortcode_atts(array('repository' => '', 'count' => '5', 'title' => '', 'class' => ''), $atts));
+		if(!isset($repository) || empty($repository)) return;
+
+		$s = "<ul class='github-releases github-releases-$repository $class'>";
+		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
+		$repositories = WP_Github_Tools_Cache::get_cache();
+		$github = $repositories['user']['login'];
+		if(!isset($repositories) || !is_array($repositories)) return;
+		$repositories = $repositories['repositories'];
+		if(!is_array($repositories)) return;
+		$releases = $repositories[$repository]['releases'];
+		if(!is_array($releases)) return;
+		$releases = array_slice($releases, 0, $count);
+		foreach($releases as $release){
+			$url = $release['html_url'];
+			$name = $release['tag_name'];
+			$date = date("d M Y", strtotime($release['published_at']));
+			$msg = $commit['body'];
+			
+			$s .= "<li class='release'><span class='date'>$date</span> <a href='$url' title='$msg'><strong>$name</strong> $msg</a></li>";
 		}	
 		$s .= '</ul>';
 

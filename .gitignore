@@ -2,6 +2,7 @@ node_modules/
 dist/
 build/
 wp-github-tools.zip
+sftp-config.json
 
 # Numerous always-ignore extensions
 *.diff

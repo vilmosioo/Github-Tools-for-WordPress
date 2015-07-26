@@ -36,7 +36,9 @@ class WP_Github_Tools_Cache{
 				foreach($cache['repositories'] as $repo){
 					if(!is_array($repo)) return;
 					$commits = WP_Github_Tools_API::get_commits($cache['user']['login'], $repo['name'], $access_token);
+					$releases = WP_Github_Tools_API::get_releases($cache['user']['login'], $repo['name'], $access_token);
 					$cache['repositories'][$repo['name']]['commits'] = $commits;
+					$cache['repositories'][$repo['name']]['releases'] = $releases;
 				}
 				set_transient(self::ID, $cache, $rate);
 			}

@@ -132,8 +132,13 @@ class WP_Github_Tools_Options{
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
 					$str .= "<p>$repository[description]</p>";
+					
 					$str .= "<h3>Usage example:</h3><p>[commits repository='$name' count='5' title='Commits']</p><div class='code-preview'>";
 					$str .= do_shortcode("[commits repository='$name' count='5' title='Commits']");
+					$str .= "</div>";
+
+					$str .= "<h3>Usage example:</h3><p>[releases repository='$name' count='5' title='Releases']</p><div class='code-preview'>";
+					$str .= do_shortcode("[releases repository='$name' count='5' title='Releases']");
 					$str .= "</div>";
 			
 					$charts_str .= "<h2>$name</h2>";

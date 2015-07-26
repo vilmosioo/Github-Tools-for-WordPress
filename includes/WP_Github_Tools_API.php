@@ -54,6 +54,10 @@ class WP_Github_Tools_API{
 		return self::get_data("repos/$user/$repo/commits", $access_token);
 	}
 
+	static function get_releases($user, $repo, $access_token){
+		return self::get_data("repos/$user/$repo/releases", $access_token);
+	}
+
 	static function get_gists($access_token){
 		return self::get_data("gists", $access_token);
 	}
