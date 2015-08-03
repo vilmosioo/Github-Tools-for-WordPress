@@ -169,7 +169,21 @@ module.exports = function (grunt) {
 				gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
 				globalReplace: false
 			}
-		}
+		},
+		'github-release': {
+			dist: {
+				options: {
+					repository: 'vilmosioo/Github-Tools-for-WordPress', // Path to repository 
+					auth: {   // Auth credentials 
+						user: 'vilmosioo',
+						password: 'a01729abb4e0c582fb53d5c0ee12b5521515c14b'
+					}
+				},
+				files: {
+					src: ['wp-github-tools.zip'] // Files that you want to attach to Release 
+				}
+			}
+		},
 	});
 
 	grunt.registerTask('build', [
@@ -182,6 +196,7 @@ module.exports = function (grunt) {
 	]);
 
 	grunt.registerTask('release', [
+		'github-release',
 		'mkdir',
 		'svn_checkout',
 		'copy:trunk',
