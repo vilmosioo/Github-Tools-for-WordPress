@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP GitHub Tools
 Plugin URI: https://github.com/vilmosioo/Github-Tools-for-WordPress
-Description: A plugin that creates live updates for any GitHub repository. 
+Description: A plugin that creates live updates for any GitHub repository.
 Version: @@version
 Author: Vilmos Ioo
 Author URI: http://vilmosioo.co.uk
@@ -12,7 +12,7 @@ License: GPL2
 	Copyright 2013 Vilmos Ioo  (email : ioo.vilmos@gmail.com)
 
 	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License, version 2, as 
+	it under the terms of the GNU General Public License, version 2, as
 	published by the Free Software Foundation.
 
 	This program is distributed in the hope that it will be useful,
@@ -23,7 +23,7 @@ License: GPL2
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-	
+
 */
 
 // Define constants
@@ -36,9 +36,10 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Releases_Widget.php
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_API.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
+require_once(VI_GITHUB_COMMITS_DIR.'vendor/autoload.php');
 
 class WP_Github_Tools {
-	
+
 	static function init(){
 		return new WP_Github_Tools();
 	}
@@ -81,7 +82,7 @@ class WP_Github_Tools {
 		add_shortcode('chart', array( &$this, 'display_chart' ));
 		// create commits widget
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
-		
+
 		// check to see if the user connected to github
 		if(isset( $_GET['code'] )){
 			if(!WP_Github_Tools_API::get_token($_GET['code'])){
@@ -98,13 +99,13 @@ class WP_Github_Tools {
 				WP_Github_Tools_Cache::clear();
 			}
 		}
-		
+
 		// add settings page
 		WP_Github_Tools_Options::init();
-	} 
+	}
 
 	public function display_errors(){
-		echo "<div class='error'><p><strong>Oops! Something went terribly wrong!</strong></p><p>We could not connect you to Github at this time. Please try again.</p></div>";		
+		echo "<div class='error'><p><strong>Oops! Something went terribly wrong!</strong></p><p>We could not connect you to Github at this time. Please try again.</p></div>";
 	}
 
 	/**
@@ -129,7 +130,7 @@ class WP_Github_Tools {
 
 		global $current_user ;
 		$user_id = $current_user->ID;
-		
+
 		if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
 			// add JavaScript for WP Pointers
 			wp_enqueue_script( 'wp-pointer' );
@@ -175,7 +176,7 @@ class WP_Github_Tools {
 				'Settings' =>  '<a href="' .admin_url('tools.php?page='.WP_Github_Tools_Options::ID).'">Settings</a>'
 			),
 			$links
-		);	
+		);
 	}
 
 	// create custom shortcodes
@@ -190,7 +191,7 @@ class WP_Github_Tools {
 		if(!isset($repository) || empty($repository)) return;
 
 		$s = "<ul class='github-commits github-commits-$repository $class'>";
-		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
+		$s = empty($title) ? $s : "<h3>$title</h3>".$s;
 		$repositories = WP_Github_Tools_Cache::get_cache();
 		$github = $repositories['user']['login'];
 		if(!isset($repositories) || !is_array($repositories)) return;
@@ -205,9 +206,9 @@ class WP_Github_Tools {
 			$committer = $commit['committer'];
 			$date = date("d M Y", strtotime($committer['date']));
 			$msg = $commit['message'];
-			
+
 			$s .= "<li class='commit'><span class='date'>$date</span> <a href='$url' title='$msg'>$msg</a></li>";
-		}	
+		}
 		$s .= '</ul>';
 
 		return $s;
@@ -219,23 +220,29 @@ class WP_Github_Tools {
 		if(!isset($repository) || empty($repository)) return;
 
 		$s = "<ul class='github-releases github-releases-$repository $class'>";
-		$s = empty($title) ? $s : "<h3>$title</h3>".$s; 
+		$s = empty($title) ? $s : "<h3>$title</h3>".$s;
 		$repositories = WP_Github_Tools_Cache::get_cache();
 		$github = $repositories['user']['login'];
 		if(!isset($repositories) || !is_array($repositories)) return;
 		$repositories = $repositories['repositories'];
 		if(!is_array($repositories)) return;
 		$releases = $repositories[$repository]['releases'];
+		$private = $repositories[$repository]['private'];
 		if(!is_array($releases)) return;
 		$releases = array_slice($releases, 0, $count);
 		foreach($releases as $release){
 			$url = $release['html_url'];
-			$name = $release['tag_name'];
+			$name = $release['name'];
+			$tag_name = $release['tag_name'];
 			$date = date("d M Y", strtotime($release['published_at']));
-			$msg = $commit['body'];
-			
-			$s .= "<li class='release'><span class='date'>$date</span> <a href='$url' title='$msg'><strong>$name</strong> $msg</a></li>";
-		}	
+			$msg = Markdown::defaultTransform($release['body']);
+
+			if($private) {
+				$s .= "<li class='release'><span class='name'>$name</span> <span class='date'>$date</span>, <strong>$tag_name</strong> <div class='release-notes'>$msg</div></li>";
+			} else {
+				$s .= "<li class='release'><span class='name'><a href='$url'>$name</a></span> <span class='date'>$date</span>, <strong>$tag_name</strong> <div class='release-notes'>$msg</div></li>";
+			}
+		}
 		$s .= '</ul>';
 
 		return $s;
@@ -245,15 +252,15 @@ class WP_Github_Tools {
 	function display_chart($atts, $content = null){
 		extract(shortcode_atts(array('repository' => '', 'id' => 'github_chart_'.WP_Github_Tools::$INDEX++, 'title' => '', 'width' => '', 'class' => '', 'height' => '300', 'color' => '#f17f49', 'background' => 'transparent', 'count' => 30), $atts));
 		if(!isset($repository) || empty($repository)) return;
-		
+
 		if (VI_VERSION > '3.3' && !is_admin()){
 			wp_enqueue_script('WP_Github_Tools_D3');
 			wp_enqueue_script('WP_Github_Tools_NVD3');
 			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
 			wp_enqueue_script('WP_Github_Tools_Chart');
-			wp_enqueue_style('WP_Github_Tools_Chart_Style');	
+			wp_enqueue_style('WP_Github_Tools_Chart_Style');
 		}
-		
+
 		$s = "";
 		$s .= !empty($title) ? "<h3>$title</h3>" : "";
 		$s .= "<div class='github-chart $class'><svg id='$id'></div>";
@@ -276,7 +283,7 @@ class WP_Github_Tools {
 
 		// add number of commits for each day in a temporary array
 		$min = null;
-		$max = null; 
+		$max = null;
 
 		// work only with the specified number of commits
 		$commits = is_numeric($count) && $count > 0 ? array_slice($commits, 0, $count) : array_slice($commits, 0, 30);
@@ -300,7 +307,7 @@ class WP_Github_Tools {
 			if(empty($temp[$i])){
 				$temp[$i] = 0;
 			}
-		}	
+		}
 		ksort($temp);
 
 		// generate the JS data
@@ -328,15 +335,15 @@ class WP_Github_Tools {
 			wp_enqueue_script('WP_Github_Tools_NVD3');
 			wp_enqueue_style('WP_Github_Tools_NVD3_Style');
 			wp_enqueue_script('WP_Github_Tools_Chart');
-			wp_enqueue_style('WP_Github_Tools_Chart_Style');	
-		}		
+			wp_enqueue_style('WP_Github_Tools_Chart_Style');
+		}
 	}
 
 	function register_widgets(){
-		register_widget( 'WP_Github_Tools_Commits_Widget' ); 
-		register_widget( 'WP_Github_Tools_Releases_Widget' ); 
+		register_widget( 'WP_Github_Tools_Commits_Widget' );
+		register_widget( 'WP_Github_Tools_Releases_Widget' );
 	}
-		
+
 		// Displays a welcome message to prompt the user to enter a github username
 	function check_github_field(){
 		$data = get_option(WP_Github_Tools_Cache::DATA);
@@ -347,7 +354,7 @@ class WP_Github_Tools {
 
 		if((!isset($github) || empty($github)) && !get_user_meta($user_id, 'wp_github_tools_ignore_notice')){
 			echo '<div class="update-nag">You have activated "Github Tools for WordPress" plugin but have not set a github username! <a href="'.admin_url('tools.php?page='.WP_Github_Tools_Options::ID.'#github').'">Do it now</a>. | <a href="?wp_github_tools_ignore_notice=0">Hide Notice</a></div>';
-		} 
+		}
 	}
 
 	/**
@@ -365,12 +372,12 @@ class WP_Github_Tools {
 	/**
 	 * Fired when the plugin is activated.
 	 *
-	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
+	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog
 	 */
 	public function activate( $network_wide ) {
 		do_action('WP_Github_Tools_Activated');
-	} 
-	
+	}
+
 	public function plugin_activated(){
 		global $current_user;
 		$user_id = $current_user->ID;
@@ -380,11 +387,11 @@ class WP_Github_Tools {
 	/**
 	 * Fired when the plugin is deactivated.
 	 *
-	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog 
+	 * @param	boolean	$network_wide	True if WPMU superadmin uses "Network Activate" action, false if WPMU is disabled or plugin is activated on an individual blog
 	 */
 	function deactivate( $network_wide ) {
 		do_action('WP_Github_Tools_Deactivated');
-	} 
+	}
 
 	function clear_all(){
 		delete_option(WP_Github_Tools_Options::GENERAL);

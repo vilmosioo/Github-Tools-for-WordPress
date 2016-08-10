@@ -1,14 +1,14 @@
 <?php
 /*
 * Plugin options
-* 
+*
 * Allows the user to set a GitHub username and refresh rate for the plugin.
 */
 class WP_Github_Tools_Options{
-	
+
   static function init(){
       new WP_Github_Tools_Options();
-  } 
+  }
 
 	/*
 	* Generate a slug from string (lowercase and '-' as separator)
@@ -26,17 +26,17 @@ class WP_Github_Tools_Options{
 
 	private function __construct(){
 		if(!is_admin()) return;
-		$this->current = ( isset( $_GET['tab'] ) ? $_GET['tab'] : '' ); 
+		$this->current = ( isset( $_GET['tab'] ) ? $_GET['tab'] : '' );
 
 		add_action('admin_menu', array(&$this, 'start'));
 		add_action( 'admin_init', array(&$this, 'register_mysettings') );
-		
+
 		wp_register_script('WP_Github_Tools_D3', '//d3js.org/d3.v3.min.js', array(), '1.0', true);
 		wp_register_script('WP_Github_Tools_NVD3', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.min.js', array('WP_Github_Tools_D3'), '1.0', true);
 		wp_register_style('WP_Github_Tools_NVD3_Style', '//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3.css');
 		wp_register_script('WP_Github_Tools_Chart', plugins_url('../js/chart.js', __FILE__), array('WP_Github_Tools_NVD3'), '1.0', true);
 		wp_register_style('WP_Github_Tools_Chart_Style', plugins_url('../css/chart.css', __FILE__), 'WP_Github_Tools_NVD3_Style');
-		
+
 
 		$temp = array();
 		foreach (wp_get_schedules() as $key => $value) {
@@ -89,8 +89,8 @@ class WP_Github_Tools_Options{
 				$description .= '<p>Time of last update: <strong>'.$cache['last_update'].'</strong> <br>';
 				$description .= 'Saved data: <strong>'.$cache['user']['public_repos'].' repositories</strong> (see cache) and <strong>'.$cache['user']['public_gists'].' gists.</strong></p>';
 				$description .=	"<p><a class='button' href='".admin_url('tools.php?page='.self::ID)."&wp_github_tools_action=disconnect' title='Disconnect'>Disconnect</a></p>".
-				"</div>";	
-				
+				"</div>";
+
 				// remove client-id and client-secret data
 				$general_options = array(
 					array(
@@ -106,10 +106,10 @@ class WP_Github_Tools_Options{
 			if(!empty($options['client-id']) && !empty($options['client-id'])){
 				// user has saved client app details, ready to connect
 				$client_id = urlencode($options['client-id']);
-				$url = 'https://github.com/login/oauth/authorize?client_id='.$client_id;
+				$url = 'https://github.com/login/oauth/authorize?client_id='.$client_id.'&scope=repo';
 				$description = '<h2>Connect to Github</h2><p>Looks like you\'re ready to link your Github account!</p>'.
 					'<p><a href="'.$url.'" class="button-primary">Connect to Github</a></p>';
-			} 
+			}
 		}
 		$description .= '<h2>Settings</h2>';
 		$this->addTab(array(
@@ -127,12 +127,12 @@ class WP_Github_Tools_Options{
 
 			$charts_str = "<h2>NVD3 charts</h2>";
 			$charts_str .= "<p>You can preview charts of you repositories' commit activity. These charts are created using <a href='http://nvd3.org/'>NVD3</a> chart library, which is based on <a href='http://d3js.org/'>D3</a>.</p>";
-			
+
 			if(is_array(@$cache['repositories'])){
 				foreach (@$cache['repositories'] as $name => $repository) {
 					$str .= "<h2>$name</h2>";
 					$str .= "<p>$repository[description]</p>";
-					
+
 					$str .= "<h3>Usage example:</h3><p>[commits repository='$name' count='5' title='Commits']</p><div class='code-preview'>";
 					$str .= do_shortcode("[commits repository='$name' count='5' title='Commits']");
 					$str .= "</div>";
@@ -140,7 +140,7 @@ class WP_Github_Tools_Options{
 					$str .= "<h3>Usage example:</h3><p>[releases repository='$name' count='5' title='Releases']</p><div class='code-preview'>";
 					$str .= do_shortcode("[releases repository='$name' count='5' title='Releases']");
 					$str .= "</div>";
-			
+
 					$charts_str .= "<h2>$name</h2>";
 					$charts_str .= "<p>$repository[description]</p>";
 					$charts_str .= "[chart repository='$name' class='admin-github-chart' height='200' color='#f17f49' count='30' title='Activity']</p><div class='code-preview'>";
@@ -158,7 +158,7 @@ class WP_Github_Tools_Options{
 				));
 			}
 		}
-		
+
 		// initialise options
 		foreach($this->tabs as $slug => $tab){
 			if(!get_option(self::ID.$slug)){
@@ -168,7 +168,7 @@ class WP_Github_Tools_Options{
 					$defaults[$name] = '';
 				}
 				update_option( self::ID.$slug, $defaults );
-			}	
+			}
 		}
 	}
 
@@ -179,7 +179,7 @@ class WP_Github_Tools_Options{
 		}
 	}
 
-	// Add a new tab. 
+	// Add a new tab.
 	// Parameters : tab name, description, option array
 	public function addTab($args = array()){
 		$args = array_merge ( array(
@@ -198,8 +198,8 @@ class WP_Github_Tools_Options{
 		);
 
 		foreach ($args['options'] as $option) {
-			$this->addField(array('tab' => $slug, 'option' => $option));        	
-		} 
+			$this->addField(array('tab' => $slug, 'option' => $option));
+		}
 	}
 
 
@@ -225,7 +225,7 @@ class WP_Github_Tools_Options{
 
 	function start(){
 		// add_theme_page( $page_title, $menu_title, $capability, $menu_slug, $function);
-		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function ); 
+		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
 		$page = add_management_page(self::TITLE, self::TITLE, 'administrator', self::ID, array(&$this, 'settings_page_setup'));
 		add_action( "admin_print_scripts-$page", array(&$this, 'settings_styles_and_scripts'));
 		add_action('load-'.$page, array(&$this, 'page_loaded'));
@@ -247,7 +247,7 @@ class WP_Github_Tools_Options{
 		$this->page_tabs();
 		if ( isset( $_GET['settings-updated'] ) ) {
 			echo "<div class='updated'><p>Github Tools Options updated successfully.</p></div>";
-		} 
+		}
 		?>
 		<form method="post" action="options.php">
 			<?php settings_fields( self::ID.$this->current ); ?>
@@ -259,16 +259,16 @@ class WP_Github_Tools_Options{
 			<?php } ?>
 		</form>
 		</div>
-		<?php 
-	} 
+		<?php
+	}
 
 	/*
 	* Page tabs
 	*
 	* Prints out the naviagtion for page tabs
 	*/
-	protected function page_tabs(){		
-		
+	protected function page_tabs(){
+
 		$links = array();
 
 		foreach( $this->tabs as $slug => $tab ){
@@ -278,7 +278,7 @@ class WP_Github_Tools_Options{
 
 		echo '<div id="icon-themes" class="icon32"><br /></div>'.
 			'<h2 class="nav-tab-wrapper">';
-		
+
 		foreach ( $links as $link ){
 			echo $link;
 		}
@@ -288,21 +288,21 @@ class WP_Github_Tools_Options{
 
 	function register_mysettings() {
 		foreach($this->tabs as $slug=>$tab){
-			// register_setting( $option_group, $option_name, $sanitize_callback ); 
+			// register_setting( $option_group, $option_name, $sanitize_callback );
 			register_setting( self::ID.$slug, self::ID.$slug );
 			if($slug != $this->current) continue;
-			// add_settings_section( $id, $title, $callback, $page ); 
-			add_settings_section( 'options_section_'.$slug, '', array(&$this, 'section_handler'), self::ID ); 
+			// add_settings_section( $id, $title, $callback, $page );
+			add_settings_section( 'options_section_'.$slug, '', array(&$this, 'section_handler'), self::ID );
 			foreach($tab['options'] as $key => $option){
-				// add_settings_field( $id, $title, $callback, $page, $section, $args ); 
+				// add_settings_field( $id, $title, $callback, $page, $section, $args );
 				add_settings_field( $key, $option['name'], array(&$this, 'input_handler'), self::ID, 'options_section_'.$slug, array("tab" => $slug, 'option' => array_merge(array('slug' => $key), $option)));
 			}
 		}
 	}
 
 	public function section_handler($args){
-		$id = substr($args['id'], strlen('options_section_')); // 16 is the length of the section prefix:self::ID		
-		echo $this->tabs[$id]['desc']; 
+		$id = substr($args['id'], strlen('options_section_')); // 16 is the length of the section prefix:self::ID
+		echo $this->tabs[$id]['desc'];
 	}
 
 	function input_handler($args){
@@ -317,8 +317,8 @@ class WP_Github_Tools_Options{
 		$type = $option['type'];
 
 		switch($type){
-			case 'select': 
-				echo "<select id='$name' name='$name'>"; 
+			case 'select':
+				echo "<select id='$name' name='$name'>";
 				foreach($options as $key => $option_value){
 					echo "<option value='$option_value' ".($option_value == $value ? 'selected' : '').">$key</option>";
 				}
@@ -327,11 +327,11 @@ class WP_Github_Tools_Options{
 				echo '<br /><span class="description">' . $description . '</span>';
 			break;
 			default:
-				echo "<input type='$type' id='$name' name='$name' value='$value'>"; 
+				echo "<input type='$type' id='$name' name='$name' value='$value'>";
 				if ( isset($description) && !empty($description) )
 				echo '<br /><span class="description">' . $description . '</span>';
 		}
-		
+
 	}
 }
 ?>
