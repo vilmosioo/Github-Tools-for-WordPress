@@ -18,18 +18,18 @@
   },
   "homepage": "https://github.com/vilmosioo/Github-Tools-for-WordPress",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-bump": "^0.3.1",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-cssmin": "^0.12.3",
-    "grunt-contrib-uglify": "^0.9.1",
-    "grunt-github-releaser": "^0.1.17",
-    "grunt-mkdir": "^0.1.2",
-    "grunt-push-svn": "^0.2.1",
-    "grunt-replace": "^0.9.2",
-    "grunt-svn-checkout": "^0.1.1",
-    "load-grunt-tasks": "^3.1.0"
+    "grunt": "0.4.5",
+    "grunt-bump": "0.3.1",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-compress": "0.13.0",
+    "grunt-contrib-copy": "0.8.0",
+    "grunt-contrib-cssmin": "0.12.3",
+    "grunt-contrib-uglify": "0.9.1",
+    "grunt-github-releaser": "0.1.17",
+    "grunt-mkdir": "0.1.2",
+    "grunt-push-svn": "0.2.1",
+    "grunt-replace": "0.9.2",
+    "grunt-svn-checkout": "0.1.1",
+    "load-grunt-tasks": "3.1.0"
   }
 }
