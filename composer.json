@@ -1,0 +1,7 @@
+{
+    "name": "vilmosioo/Github-Tools-for-WordPress",
+    "description": "Github Tools for Wordpress",
+    "require": {
+        "michelf/php-markdown": "^1.6"
+    }
+}
