@@ -38,6 +38,8 @@ require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Options.php');
 require_once(VI_GITHUB_COMMITS_DIR.'includes/WP_Github_Tools_Cache.php');
 require_once(VI_GITHUB_COMMITS_DIR.'vendor/autoload.php');
 
+use Michelf\Markdown;
+
 class WP_Github_Tools {
 
 	static function init(){

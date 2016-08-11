@@ -81,6 +81,10 @@ The chart preview system. Currently in beta.
 ![](screenshot-5.png) 
 
 ### Changelog
+
+*1.4 11 Aug 2016*
+ * Provides access to private repos. Current users will need to re-authorize their repository.
+ * Markdown-formatted release notes are rendered into HTML.
 	
 *1.3 26 July 2015*
  * Added custom widget to display repository releases.

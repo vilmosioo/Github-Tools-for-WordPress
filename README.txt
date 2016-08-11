@@ -2,7 +2,7 @@
 Contributors: vilmosioo
 Tags: github, tool, widget, repository, commit, gist
 Requires at least: 3.3
-Tested up to: 4.2.2
+Tested up to: 4.5.3
 Stable tag: @@version
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -89,6 +89,8 @@ If you have suggestions for a new add-on, feel free to contact me on [Twitter](h
 5. The chart preview system. Currently in beta. 
 
 == Upgrade Notice ==
+= 1.4 =
+Version 1.4 allows access to private repos and parses Markdown release notes to HTML.
 = 1.3 =
 Version 1.3 allows you to display a repository's releases.
 = 1.2 =
@@ -102,6 +104,10 @@ Version 1.0 published!
 Send any questions directly to [me](http://twitter.com/vilmosioo)!
 
 == Changelog ==
+
+= 1.4 =
+*	Provides access to private repos. Current users will need to re-authorize their repository.
+*	Markdown-formatted release notes are rendered into HTML.
 
 = 1.3 =
 *	Added custom widget to display repository releases.
